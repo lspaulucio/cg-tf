@@ -1,0 +1,5 @@
+<aplicacao>
+	<arquivoDaArena nome="arena" tipo="svg" caminho="coloque o seu caminho aqui para testar"></arquivoDaArena>
+	<carro velTiro="0.2" velCarro="0.1"></carro>
+	<carroInimigo freqTiro="0.0001" velCarro="0.1" velTiro="0.2"></carroInimigo>
+</aplicacao>
