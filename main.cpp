@@ -1,6 +1,6 @@
-#include<GL/gl.h>
-#include<GL/glu.h>
-#include<GL/glut.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
 #include <iostream>
 #include <vector>
 #include "tinyxml2/tinyxml2.h"
@@ -10,6 +10,7 @@
 #include "sources/retangulo.h"
 #include "sources/circulo.h"
 #include "sources/carro.h"
+#include "sources/camera.h"
 
 using namespace tinyxml2;
 using namespace std;
@@ -20,6 +21,7 @@ list<Carro> enemies;
 Circulo arena[2];
 Retangulo rect;
 Carro player;
+Camera camera;
 list<Tiro> playerShots, enemiesShots;
 
 int key_status[256] = {0};
@@ -35,7 +37,9 @@ int main(int argc, char** argv)
     glutCreateWindow(MainWindow.getTitle().c_str());
     init();
     glutDisplayFunc(display);
+    glutReshapeFunc(reshape);
     glutMouseFunc(mouse);
+    glutSpecialFunc(specialFunc);
     glutPassiveMotionFunc(passiveMouse);
     glutKeyboardFunc(keypress);
     glutKeyboardUpFunc(keyUp);

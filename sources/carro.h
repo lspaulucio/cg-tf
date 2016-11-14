@@ -69,6 +69,8 @@ public:
 
     float* randomMove(double time, int id);
 
+    float* getGunTip();
+
     Tiro shoot();
 
     ~Carro();

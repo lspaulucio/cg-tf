@@ -7,6 +7,7 @@ extern list<Carro> enemies;
 extern Carro player;
 extern list<Tiro> playerShots, enemiesShots;
 extern int key_status[256];
+extern Camera camera;
 
 void readXMLFile(const char *path)
 {
@@ -235,12 +236,12 @@ void drawCircle(float xc, float yc, float radius, const float colors[3], int res
     float dx, dy;
     glColor3fv((GLfloat*)(colors));
     glBegin(GL_TRIANGLE_FAN);
-		glVertex2f(xc, yc);
+		glVertex3f(xc, yc, 0);
 		for(int i = 0; i <= resolution; i++)
         {
             dx = xc + (radius * cos(i * 2.0*M_PI / resolution));
             dy = yc + (radius * sin(i * 2.0*M_PI / resolution));
-			glVertex2f(dx, dy);
+			glVertex3f(dx, dy, 0);
 		}
     glEnd();
 }
@@ -279,6 +280,7 @@ void display(void)
     /*Cleaning pixels */
     glClear(GL_COLOR_BUFFER_BIT);
 
+
     if(WIN_FLAG)
         printMessage(MainWindow.getWidth()/4, MainWindow.getHeight()/2, "Congratulations!!! You won the game");
     else if(LOSE_FLAG)
@@ -303,7 +305,18 @@ void display(void)
             for (list<Tiro>::iterator it = enemiesShots.begin(); it != enemiesShots.end(); it++)
                 (*it).draw();
         }
+
+
+    /*float CAMERA_DISTANCE = 60;
+    float dx = CAMERA_DISTANCE*cos(player.getCarRotation() * M_PI/180.0);
+    float dy = CAMERA_DISTANCE*sin(player.getCarRotation() * M_PI/180.0);
+    float YELLOW_COLOR[3] = {1.0, 1.0, 0.0};
+    float* gunTip = player.getGunTip();
+    drawCircle(gunTip[0], gunTip[1], 5, YELLOW_COLOR , 100);
+    */
+
     glutSwapBuffers();
+
 }
 
 bool START_FLAG = false; //Flag to indicate beginning the game
@@ -529,6 +542,8 @@ void idle(void)
         // ///////////////////////////////////// End Check Victory ///////////////////////////////////////////
 
     }
+
+    configObservator();
     glutPostRedisplay();
 
 }
@@ -596,6 +611,38 @@ void keypress (unsigned char key, int x, int y)
       default:
           break;
   }
+
+    configObservator();
+    glutPostRedisplay();
+
+}
+
+void specialFunc(int key, int x, int y)
+{
+
+    switch (key)
+    {
+        case GLUT_KEY_F1:
+            camera.setType(CAMERA_01);
+            camera.setAngle(50);
+            configProjection();
+        break;
+
+        case GLUT_KEY_F2:
+            camera.setType(CAMERA_02);
+            camera.setAngle(50);
+            configProjection();
+        break;
+
+        case GLUT_KEY_F3:
+            camera.setType(CAMERA_03);
+            camera.setAngle(50);
+            configProjection();
+        break;
+    }
+
+    configObservator();
+    glutPostRedisplay();
 }
 
 void mouse(int key, int state, int x, int y)
@@ -697,3 +744,144 @@ void printMessage(int x, int y, const char* message)
         tmpStr++;
     }
 }
+
+void DefineIluminacao (void)
+{
+    GLfloat luzAmbiente[4]={0.2,0.2,0.2,1.0}; 
+    GLfloat luzDifusa[4]={0.7,0.7,0.7,1.0};    // "cor" 
+    GLfloat luzEspecular[4]={1.0, 1.0, 1.0, 1.0};// "brilho" 
+    GLfloat posicaoLuz[4]={0.0, -40.0, 0.0, 1.0};
+
+    // Capacidade de brilho do material
+    GLfloat especularidade[4]={1.0,1.0,1.0,1.0}; 
+    GLint especMaterial = 60;
+
+    // Define a refletância do material 
+    glMaterialfv(GL_FRONT,GL_SPECULAR, especularidade);
+    // Define a concentração do brilho
+    glMateriali(GL_FRONT,GL_SHININESS,especMaterial);
+
+    // Ativa o uso da luz ambiente 
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente);
+
+    // Define os parâmetros da luz de número 0
+    glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente); 
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa );
+    glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular );
+    glLightfv(GL_LIGHT0, GL_POSITION, posicaoLuz );  
+    
+    // Habilita o modelo de colorização de Gouraud
+    glShadeModel(GL_SMOOTH);
+}
+
+void configObservator(void)
+{
+    // Especifica sistema de coordenadas do modelo
+    glMatrixMode(GL_MODELVIEW);
+
+    // Inicializa sistema de coordenadas do modelo
+    glLoadIdentity();
+
+    DefineIluminacao();
+
+    if(camera.getType() == CAMERA_01)
+    {
+       
+        float DISTANCE_BACKWARD = 60;
+
+        float dx = DISTANCE_BACKWARD*cos(player.getCarRotation() * M_PI/180.0);
+        float dy = DISTANCE_BACKWARD*sin(player.getCarRotation() * M_PI/180.0);
+
+        //printf("ObsX: %f ObsY: %f ObsZ: %f\n", player.getXc() + dx, player.getYc() + dy, obsZ );
+        //printf("X: %f Y: %f\n", player.getXc(), player.getYc() );
+        //printf("CarRotation: %f\n", player.getCarRotation() );
+
+        camera.setSrcX(player.getXc() - dx);
+        camera.setSrcY(player.getYc() - dy);
+        camera.setSrcZ(30);
+
+        camera.setDstX(player.getXc());
+        camera.setDstY(player.getYc());
+        camera.setDstZ(0);
+
+        //camera atras do carro
+        gluLookAt( camera.getSrcX(), camera.getSrcY(), camera.getSrcZ(), 
+                   camera.getDstX(), camera.getDstY(), camera.getDstZ(), 
+                    0, 0, 1 );
+
+    }
+    else if(camera.getType() == CAMERA_02)
+    {
+        float DISTANCE_FORWARD = 60;
+
+        float dx = DISTANCE_FORWARD*cos(player.getCarRotation() * M_PI/180.0);
+        float dy = DISTANCE_FORWARD*sin(player.getCarRotation() * M_PI/180.0);
+
+        camera.setSrcX(player.getXc());
+        camera.setSrcY(player.getYc());
+        camera.setSrcZ(30); //altura
+
+        camera.setDstX(player.getXc()+dx);
+        camera.setDstY(player.getYc()+dy);
+        camera.setDstZ(0);
+
+        //camera atras do carro
+        gluLookAt( camera.getSrcX(), camera.getSrcY(), camera.getSrcZ(), 
+                   camera.getDstX(), camera.getDstY(), camera.getDstZ(), 
+                    0, 0, 1 );
+    }
+    else if(camera.getType() == CAMERA_03) //canhao
+    {
+        float DISTANCE_FORWARD = 80;
+
+        float* gunTip = player.getGunTip();
+
+        camera.setSrcX(gunTip[0]);
+        camera.setSrcY(gunTip[1]);
+        camera.setSrcZ(30);
+
+        float dx = DISTANCE_FORWARD*cos( (player.getCarRotation() + player.getGunRotation()) * M_PI/180.0);
+        float dy = DISTANCE_FORWARD*sin( (player.getCarRotation() + player.getGunRotation()) * M_PI/180.0);
+
+        camera.setDstX(player.getXc()+dx);
+        camera.setDstY(player.getYc()+dy);
+        camera.setDstZ(0);
+
+        //camera atras do carro
+        gluLookAt( camera.getSrcX(), camera.getSrcY(), camera.getSrcZ(), 
+                   camera.getDstX(), camera.getDstY(), camera.getDstZ(), 
+                    0, 0, 1 );
+    }
+}
+
+// Função usada para especificar o volume de visualização
+void configProjection(void)
+{
+    // Especifica sistema de coordenadas de projeção
+    glMatrixMode(GL_PROJECTION);
+
+    // Inicializa sistema de coordenadas de projeção
+    glLoadIdentity();
+
+    // Especifica a projeção perspectiva(angulo,aspecto,zMin,zMax)
+    gluPerspective(camera.getAngle(),camera.getAspect(),0.5,500);
+
+    configObservator();
+}
+
+// Função callback chamada quando o tamanho da janela é alterado 
+void reshape(GLsizei w, GLsizei h)
+{
+    // Para previnir uma divisão por zero
+    if ( h == 0 ) h = 1;
+
+    // Especifica as dimensões da viewport
+    glViewport(0, 0, w, h);
+ 
+    // Calcula a correção de aspecto
+    camera.setAspect((GLfloat)w/(GLfloat)h);
+
+    configProjection();
+
+}
+

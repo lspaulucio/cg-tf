@@ -15,6 +15,7 @@
 #include "circulo.h"
 #include "retangulo.h"
 #include "carro.h"
+#include "camera.h"
 
 using namespace std;
 using namespace tinyxml2;
@@ -38,5 +39,11 @@ void printMessage(int x, int y, const char* message);
 void drawRectangle(float x1, float y1, float x2, float y2, const float colors[3] = DEFAULT_COLOR);
 void drawCircle(float xc, float yc, float radius, const float colors[3] = DEFAULT_COLOR, int resolution = 100);
 void drawEllipse(float xc, float yc, float width, float height, const float colors[3] = DEFAULT_COLOR, int resolution = 100);
+
+//Câmera
+void configObservator(void);
+void configProjection(void);
+void reshape(GLsizei w, GLsizei h);
+void specialFunc(int key, int x, int y);
 
 #endif //FUNCOES_H

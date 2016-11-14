@@ -475,6 +475,31 @@ float* Carro::randomMove(double timeDif, int id)
     return move(randomDirection, timeDif);
 }
 
+float* Carro::getGunTip()
+{
+    float carHeight = 300;
+    float gunHeight = 90;
+    float carWidth = 140;
+    float wheelShaftWidth = 70;
+    float wheelLength = 125;
+    float scale_factor = (this->getRadius()*2) / (carWidth + 2*wheelShaftWidth + 2*wheelLength);
+
+    carHeight *= scale_factor;
+    gunHeight *= scale_factor;
+
+    float shootRotation = getCarRotation() + getGunRotation();
+    //Add radius to adjust shot to appear upper the gun
+    float xc = getXc() + (carHeight/2 * cos(this->getCarRotation() * M_PI / 180.0) + (gunHeight) * cos(shootRotation * M_PI / 180.0));
+    float yc = getYc() + (carHeight/2 * sin(this->getCarRotation() * M_PI / 180.0) + (gunHeight) * sin(shootRotation * M_PI / 180.0));
+
+    float* gunTip = (float*)malloc(3*sizeof(float));
+    gunTip[0] = xc;
+    gunTip[1] = yc;
+    gunTip[2] = 0;
+
+    return gunTip;
+}
+
 Tiro Carro::shoot()
 {
     float carHeight = 300;
