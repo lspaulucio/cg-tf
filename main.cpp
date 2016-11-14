@@ -32,15 +32,16 @@ int main(int argc, char** argv)
     srand(time(NULL));
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-    glutInitWindowSize(MainWindow.getWidth(),MainWindow.getHeight());
+    glutInitWindowSize(MainWindow.getWidth(),MainWindow.getHeight()+200);
     glutInitWindowPosition(500,500);
     glutCreateWindow(MainWindow.getTitle().c_str());
     init();
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
-    glutMouseFunc(mouse);
     glutSpecialFunc(specialFunc);
     glutPassiveMotionFunc(passiveMouse);
+    glutMotionFunc(motionMouse);
+    glutMouseFunc(mouse);
     glutKeyboardFunc(keypress);
     glutKeyboardUpFunc(keyUp);
     glutIdleFunc(idle);

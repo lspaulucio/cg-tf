@@ -77,13 +77,23 @@ bool Retangulo::insideSquare(float x, float y) const
         return false;
 }
 
-void Retangulo::draw()
+void Retangulo::draw(float alpha)
 {
-    glColor3fv((GLfloat*)(this->getRGBColors()));
+    float cor[4];
+    float* _cor = (float*)(this->getRGBColors());
+
+    cor[0] = _cor[0];
+    cor[1] = _cor[1];
+    cor[2] = _cor[2];
+    cor[3] = alpha;
+
+    glColor4fv(cor);
+    
     glBegin(GL_POLYGON);
         for(int i = 0; i < 4; i++)
             glVertex3fv((GLfloat*)(this->getVertices(i)));
     glEnd();
+
 }
 
 Retangulo::~Retangulo(){}

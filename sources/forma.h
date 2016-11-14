@@ -45,7 +45,7 @@ class Forma
 
         virtual void translate(float dx, float dy)=0;
 
-        virtual void draw()=0;
+        virtual void draw(float alpha = 1)=0;
 
         ~Forma();
 

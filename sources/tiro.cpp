@@ -45,10 +45,19 @@ void Tiro::setShootRotation(float shotRotation)
     Tiro::shotRotation = shotRotation;
 }
 
-void Tiro::draw()
+void Tiro::draw(float alpha)
 {
     float dx, dy;
-    glColor3fv((GLfloat*)RED_COLOR);
+
+    float cor[4];
+    float* _cor = (GLfloat*)RED_COLOR;
+
+    cor[0] = _cor[0];
+    cor[1] = _cor[1];
+    cor[2] = _cor[2];
+    cor[3] = alpha;
+
+    glColor4fv(cor);
     glBegin(GL_TRIANGLE_FAN);
     glVertex2f(getXc(), getYc());
 		for(int i = 0; i <= getDrawResolution(); i++)
@@ -58,7 +67,16 @@ void Tiro::draw()
             glVertex2f(dx, dy);
         }
     glEnd();
-    glColor3fv((GLfloat*)YELLOW_COLOR);
+
+
+    _cor = (GLfloat*)YELLOW_COLOR;
+
+    cor[0] = _cor[0];
+    cor[1] = _cor[1];
+    cor[2] = _cor[2];
+    cor[3] = alpha;
+
+    glColor4fv(cor);
     glBegin(GL_TRIANGLE_FAN);
     glVertex2f(getXc(), getYc());
     for(int i = 0; i <= getDrawResolution(); i++)

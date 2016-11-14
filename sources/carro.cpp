@@ -168,7 +168,7 @@ void Carro::setWheelRotation(float rotation)
     // cout << "Roda: x = " << getWheelDirection()[X_AXIS] << " " << "y = " << getWheelDirection()[Y_AXIS] << endl;
 }
 
-void Carro::draw(char type)
+void Carro::draw(char type, float alpha)
 {
     //Car parameters
     float carWidth = 140;
@@ -197,15 +197,15 @@ void Carro::draw(char type)
         glScalef(scale_factor, scale_factor, 1);
             if(type == 'e')
             {
-                drawRectangle(-carWidth / 2, carHeight / 2, carWidth / 2, -carHeight / 2, ENEMY_BODY_COLOR);
-                drawEllipse(0.0, 0.0, ellipseSmallAxis, ellipseBigAxis, ENEMY_ELLIPSE_COLOR);
+                drawRectangle(-carWidth / 2, carHeight / 2, carWidth / 2, -carHeight / 2, ENEMY_BODY_COLOR, alpha);
+                drawEllipse(0.0, 0.0, ellipseSmallAxis, ellipseBigAxis, ENEMY_ELLIPSE_COLOR, 100, alpha);
             }
             else
             {
-                drawRectangle(-carWidth / 2, carHeight / 2, carWidth / 2, -carHeight / 2, BODY_COLOR);
-                drawEllipse(0.0, 0.0, ellipseSmallAxis, ellipseBigAxis, ELLIPSE_COLOR);
+                drawRectangle(-carWidth / 2, carHeight / 2, carWidth / 2, -carHeight / 2, BODY_COLOR, alpha);
+                drawEllipse(0.0, 0.0, ellipseSmallAxis, ellipseBigAxis, ELLIPSE_COLOR, 100, alpha);
             }
-//            drawCircle(0.0, 0.0, this->getRadius()/scale_factor);
+        //drawCircle(0.0, 0.0, this->getRadius()/scale_factor);
 
         glPushMatrix();
             //move to gun position (body upper)
@@ -215,9 +215,9 @@ void Carro::draw(char type)
                 glRotated(this->getGunRotation(), 0.0, 0.0, 1);
 
                 if(type == 'e')
-                    drawRectangle(-gunWidth/2, gunHeight, gunWidth/2, 0.0, ENEMY_GUN_COLOR);
+                    drawRectangle(-gunWidth/2, gunHeight, gunWidth/2, 0.0, ENEMY_GUN_COLOR, alpha);
                 else
-                    drawRectangle(-gunWidth/2, gunHeight, gunWidth/2, 0.0, GUN_COLOR);
+                    drawRectangle(-gunWidth/2, gunHeight, gunWidth/2, 0.0, GUN_COLOR, alpha);
 
             glPopMatrix();
 
@@ -227,23 +227,23 @@ void Carro::draw(char type)
             glPushMatrix();
                 //drawing wheelshaft upper left
                 glTranslatef(-carWidth/2 - wheelShaftWidth/2, -wheelAxisDistance - wheelShaftLength/2, 0);
-                    drawRectangle(-wheelShaftWidth/2, wheelShaftLength/2, wheelShaftWidth/2, -wheelShaftLength/2, AXIS_COLOR);
+                    drawRectangle(-wheelShaftWidth/2, wheelShaftLength/2, wheelShaftWidth/2, -wheelShaftLength/2, AXIS_COLOR, alpha);
                 //drawing wheel upper left
                 glTranslatef(-wheelShaftWidth/2 - wheelWidth/2 + CORRECTION_FACTOR, 0, 0);
                     glRotated(this->getWheelRotation(), 0.0, 0.0, 1);
-                    drawRectangle(-wheelWidth/2, wheelLength/2, wheelWidth/2, -wheelLength/2, WHEEL_COLOR);
+                    drawRectangle(-wheelWidth/2, wheelLength/2, wheelWidth/2, -wheelLength/2, WHEEL_COLOR, alpha);
                     //Wheel move effect
                     if(isMoving())
                     {
                         if(animationAux / 5 == 0)
                         {
-                            drawRectangle(-wheelWidth/2, wheelLength/4, wheelWidth/2, 0.0, DEFAULT_COLOR);
-                            drawRectangle(-wheelWidth/2, -wheelLength/4, wheelWidth/2, -wheelLength/2, DEFAULT_COLOR);
+                            drawRectangle(-wheelWidth/2, wheelLength/4, wheelWidth/2, 0.0, DEFAULT_COLOR, alpha);
+                            drawRectangle(-wheelWidth/2, -wheelLength/4, wheelWidth/2, -wheelLength/2, DEFAULT_COLOR, alpha);
                         }
 
                         else if(animationAux /10 == 0 ){
-                            drawRectangle(-wheelWidth/2, 0.0, wheelWidth/2, -wheelLength/4, DEFAULT_COLOR);
-                            drawRectangle(-wheelWidth/2, wheelLength/2, wheelWidth/2, wheelLength/4, DEFAULT_COLOR);
+                            drawRectangle(-wheelWidth/2, 0.0, wheelWidth/2, -wheelLength/4, DEFAULT_COLOR, alpha);
+                            drawRectangle(-wheelWidth/2, wheelLength/2, wheelWidth/2, wheelLength/4, DEFAULT_COLOR, alpha);
                         }
                     }
             glPopMatrix();
@@ -251,23 +251,23 @@ void Carro::draw(char type)
             glPushMatrix();
                 //drawing wheelshaft upper right
                 glTranslatef(carWidth/2 + wheelShaftWidth/2, -wheelAxisDistance - wheelShaftLength/2, 0);
-                    drawRectangle(-wheelShaftWidth/2, wheelShaftLength/2, wheelShaftWidth/2, -wheelShaftLength/2, AXIS_COLOR);
+                    drawRectangle(-wheelShaftWidth/2, wheelShaftLength/2, wheelShaftWidth/2, -wheelShaftLength/2, AXIS_COLOR, alpha);
                 //drawing wheel upper right
                 glTranslatef(wheelShaftWidth/2 + wheelWidth/2 - CORRECTION_FACTOR, 0, 0);
                     glRotated(this->getWheelRotation(), 0.0, 0.0, 1);
-                    drawRectangle(-wheelWidth/2, wheelLength/2, wheelWidth/2, -wheelLength/2, WHEEL_COLOR);
+                    drawRectangle(-wheelWidth/2, wheelLength/2, wheelWidth/2, -wheelLength/2, WHEEL_COLOR, alpha);
                     //Wheel move effect
                     if(isMoving())
                     {
                         if(animationAux / 5 == 0)
                         {
-                            drawRectangle(-wheelWidth/2, wheelLength/4, wheelWidth/2, 0.0, DEFAULT_COLOR);
-                            drawRectangle(-wheelWidth/2, -wheelLength/4, wheelWidth/2, -wheelLength/2, DEFAULT_COLOR);
+                            drawRectangle(-wheelWidth/2, wheelLength/4, wheelWidth/2, 0.0, DEFAULT_COLOR, alpha);
+                            drawRectangle(-wheelWidth/2, -wheelLength/4, wheelWidth/2, -wheelLength/2, DEFAULT_COLOR, alpha);
                         }
 
                         else if(animationAux /10 == 0 ){
-                            drawRectangle(-wheelWidth/2, 0.0, wheelWidth/2, -wheelLength/4, DEFAULT_COLOR);
-                            drawRectangle(-wheelWidth/2, wheelLength/2, wheelWidth/2, wheelLength/4, DEFAULT_COLOR);
+                            drawRectangle(-wheelWidth/2, 0.0, wheelWidth/2, -wheelLength/4, DEFAULT_COLOR, alpha);
+                            drawRectangle(-wheelWidth/2, wheelLength/2, wheelWidth/2, wheelLength/4, DEFAULT_COLOR, alpha);
                         }
                     }
             glPopMatrix();
@@ -279,15 +279,29 @@ void Carro::draw(char type)
 
             //Drawing car exhaust
             glPushMatrix();
-                drawRectangle(-exhaustWidth/2, 0.0, exhaustWidth/2, -exhaustHeight, GREY_COLOR);
+                drawRectangle(-exhaustWidth/2, 0.0, exhaustWidth/2, -exhaustHeight, GREY_COLOR, alpha);
                 glTranslatef(0.0, -exhaustHeight, 0.0);
 
                 if(isMoving()) //if car is moving draw fire
                 {
+
+                    float cor[4];
+                    float* _cor; 
+
                     if(animationAux % 4 == 0){
+
                         glPushMatrix();
                         glTranslatef(0.0, -carHeight/10, 0.0);
-                        glColor3fv(YELLOW_COLOR);
+
+                        _cor = (GLfloat*)YELLOW_COLOR;
+
+                        cor[0] = _cor[0];
+                        cor[1] = _cor[1];
+                        cor[2] = _cor[2];
+                        cor[3] = alpha;
+
+                        glColor4fv(cor);
+
                         glBegin(GL_POLYGON);
                         glVertex3f(-exhaustWidth / 2, 0.0, 0.0);
                         glVertex3f(-exhaustWidth / 3, -exhaustFireHeight / 2, 0.0);
@@ -296,7 +310,16 @@ void Carro::draw(char type)
                         glVertex3f(exhaustWidth / 2, 0.0, 0.0);
                         glEnd();
 
-                        glColor3fv(RED_COLOR);
+                        
+                        _cor = (GLfloat*)RED_COLOR;
+
+                        cor[0] = _cor[0];
+                        cor[1] = _cor[1];
+                        cor[2] = _cor[2];
+                        cor[3] = alpha;
+
+                        glColor4fv(cor);
+
                         glBegin(GL_POLYGON);
                         glVertex3f(-exhaustWidth / 4, 0.0, 0.0);
                         glVertex3f(0, -exhaustFireHeight / 2, 0.0);
@@ -305,7 +328,16 @@ void Carro::draw(char type)
                         glPopMatrix();
                     }
                     else {
-                        glColor3fv(YELLOW_COLOR);
+                        
+                        _cor = (GLfloat*)YELLOW_COLOR;
+
+                        cor[0] = _cor[0];
+                        cor[1] = _cor[1];
+                        cor[2] = _cor[2];
+                        cor[3] = alpha;
+
+                        glColor4fv(cor);
+
                         glBegin(GL_POLYGON);
                         glVertex3f(-exhaustWidth / 2, 0.0, 0.0);
                         glVertex3f(-exhaustWidth / 3, -exhaustFireHeight / 2, 0.0);
@@ -314,7 +346,16 @@ void Carro::draw(char type)
                         glVertex3f(exhaustWidth / 2, 0.0, 0.0);
                         glEnd();
 
-                        glColor3fv(RED_COLOR);
+
+
+                        _cor = (GLfloat*)RED_COLOR;
+
+                        cor[0] = _cor[0];
+                        cor[1] = _cor[1];
+                        cor[2] = _cor[2];
+                        cor[3] = alpha;
+
+                        glColor4fv(cor);
                         glBegin(GL_POLYGON);
                         glVertex3f(-exhaustWidth / 4, 0.0, 0.0);
                         glVertex3f(0, -exhaustFireHeight / 2, 0.0);
@@ -330,22 +371,22 @@ void Carro::draw(char type)
             glPushMatrix();
                 //drawing wheelshaft bottom left
                 glTranslatef(-carWidth/2 - wheelShaftWidth/2, wheelAxisDistance + wheelShaftLength/2, 0);
-                    drawRectangle(-wheelShaftWidth/2, wheelShaftLength/2, wheelShaftWidth/2, -wheelShaftLength/2, AXIS_COLOR);
+                    drawRectangle(-wheelShaftWidth/2, wheelShaftLength/2, wheelShaftWidth/2, -wheelShaftLength/2, AXIS_COLOR, alpha);
                 //drawing wheel bottom left
                 glTranslatef(-wheelShaftWidth/2 - wheelWidth/2, 0, 0);
-                    drawRectangle(-wheelWidth/2, wheelLength/2, wheelWidth/2, -wheelLength/2, WHEEL_COLOR);
+                    drawRectangle(-wheelWidth/2, wheelLength/2, wheelWidth/2, -wheelLength/2, WHEEL_COLOR, alpha);
                     //Wheel move effect
                     if(isMoving())
                     {
                         if(animationAux / 5 == 0)
                         {
-                            drawRectangle(-wheelWidth/2, wheelLength/4, wheelWidth/2, 0.0, DEFAULT_COLOR);
-                            drawRectangle(-wheelWidth/2, -wheelLength/4, wheelWidth/2, -wheelLength/2, DEFAULT_COLOR);
+                            drawRectangle(-wheelWidth/2, wheelLength/4, wheelWidth/2, 0.0, DEFAULT_COLOR, alpha);
+                            drawRectangle(-wheelWidth/2, -wheelLength/4, wheelWidth/2, -wheelLength/2, DEFAULT_COLOR, alpha);
                         }
 
                         else if(animationAux /10 == 0 ){
-                            drawRectangle(-wheelWidth/2, 0.0, wheelWidth/2, -wheelLength/4, DEFAULT_COLOR);
-                            drawRectangle(-wheelWidth/2, wheelLength/2, wheelWidth/2, wheelLength/4, DEFAULT_COLOR);
+                            drawRectangle(-wheelWidth/2, 0.0, wheelWidth/2, -wheelLength/4, DEFAULT_COLOR, alpha);
+                            drawRectangle(-wheelWidth/2, wheelLength/2, wheelWidth/2, wheelLength/4, DEFAULT_COLOR, alpha);
                         }
                     }
             glPopMatrix();
@@ -353,22 +394,22 @@ void Carro::draw(char type)
             glPushMatrix();
                 //drawing wheelshaft bottom right
                 glTranslatef(carWidth/2 + wheelShaftWidth/2, wheelAxisDistance + wheelShaftLength/2, 0);
-                    drawRectangle(-wheelShaftWidth/2, wheelShaftLength/2, wheelShaftWidth/2, -wheelShaftLength/2, AXIS_COLOR);
+                    drawRectangle(-wheelShaftWidth/2, wheelShaftLength/2, wheelShaftWidth/2, -wheelShaftLength/2, AXIS_COLOR, alpha);
                 //drawing wheel bottom right
                 glTranslatef(wheelShaftWidth/2 + wheelWidth/2, 0, 0);
-                    drawRectangle(-wheelWidth/2, wheelLength/2, wheelWidth/2, -wheelLength/2, WHEEL_COLOR);
+                    drawRectangle(-wheelWidth/2, wheelLength/2, wheelWidth/2, -wheelLength/2, WHEEL_COLOR, alpha);
                     //Wheel move effect
                     if(isMoving())
                     {
                         if(animationAux / 5 == 0)
                         {
-                            drawRectangle(-wheelWidth/2, wheelLength/4, wheelWidth/2, 0.0, DEFAULT_COLOR);
-                            drawRectangle(-wheelWidth/2, -wheelLength/4, wheelWidth/2, -wheelLength/2, DEFAULT_COLOR);
+                            drawRectangle(-wheelWidth/2, wheelLength/4, wheelWidth/2, 0.0, DEFAULT_COLOR, alpha);
+                            drawRectangle(-wheelWidth/2, -wheelLength/4, wheelWidth/2, -wheelLength/2, DEFAULT_COLOR, alpha);
                         }
 
                         else if(animationAux /10 == 0 ){
-                            drawRectangle(-wheelWidth/2, 0.0, wheelWidth/2, -wheelLength/4, DEFAULT_COLOR);
-                            drawRectangle(-wheelWidth/2, wheelLength/2, wheelWidth/2, wheelLength/4, DEFAULT_COLOR);
+                            drawRectangle(-wheelWidth/2, 0.0, wheelWidth/2, -wheelLength/4, DEFAULT_COLOR, alpha);
+                            drawRectangle(-wheelWidth/2, wheelLength/2, wheelWidth/2, wheelLength/4, DEFAULT_COLOR, alpha);
                         }
                     }
             glPopMatrix();
@@ -376,7 +417,6 @@ void Carro::draw(char type)
         glPopMatrix();//Back to central position of car
 
     glPopMatrix();
-
 }// End draw
 
 float* Carro::move(bool direction, double time)

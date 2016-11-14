@@ -86,18 +86,28 @@ bool Circulo::outsideCircle(Circulo &circle) const
 
 }
 
-void Circulo::draw()
+
+void Circulo::draw(float alpha)
 {
     float dx, dy;
-    glColor3fv((GLfloat*)(this->getRGBColors()));
+
+    float cor[4];
+    float* _cor = (float*)(this->getRGBColors());
+
+    cor[0] = _cor[0];
+    cor[1] = _cor[1];
+    cor[2] = _cor[2];
+    cor[3] = alpha;
+
+    glColor4fv(cor);
     glBegin(GL_TRIANGLE_FAN);
-		glVertex2f(this->getXc(), this->getYc());
-		for(int i = 0; i <= this->getDrawResolution(); i++)
+        glVertex2f(this->getXc(), this->getYc());
+        for(int i = 0; i <= this->getDrawResolution(); i++)
         {
             dx = this->getXc() + (this->getRadius() * cos(i * 2.0*M_PI / this->getDrawResolution()));
             dy = this->getYc() + (this->getRadius() * sin(i * 2.0*M_PI / this->getDrawResolution()));
-			glVertex2f(dx, dy);
-		}
+            glVertex2f(dx, dy);
+        }
     glEnd();
 }
 

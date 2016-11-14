@@ -9,6 +9,14 @@ extern list<Tiro> playerShots, enemiesShots;
 extern int key_status[256];
 extern Camera camera;
 
+int _w, _h;
+
+//camera
+double camXYAngle=0;
+double camXZAngle=0;
+int buttonDown=0;
+float lastX, lastY;
+
 void readXMLFile(const char *path)
 {
     const char config_file_name[] = "config.xml";
@@ -70,46 +78,46 @@ void readXMLFile(const char *path)
     enemyCarSpeed = pElem->FindAttribute("velCarro")->FloatValue();
     enemyShotSpeed = pElem->FindAttribute("velTiro")->FloatValue();
 
-//     cout << "shootFreq " << enemyShootFrequence << endl;
-//     cout << "velTiro " << enemyShootSpeed << endl;
-//     cout << "velCarro " << enemyCarVelocity << endl;
+    //     cout << "shootFreq " << enemyShootFrequence << endl;
+    //     cout << "velTiro " << enemyShootSpeed << endl;
+    //     cout << "velCarro " << enemyCarVelocity << endl;
 
-    //Path and name to svg file
+        //Path and name to svg file
 
-    if(svg_path[0] == '~') //Testing if there is a tilde on beginning of path
-    {
-        pathFile = getenv("HOME");
-        svg_path.erase(0,1);
-        pathFile += svg_path;
+        if(svg_path[0] == '~') //Testing if there is a tilde on beginning of path
+        {
+            pathFile = getenv("HOME");
+            svg_path.erase(0,1);
+            pathFile += svg_path;
+            // cout << pathFile << endl;
+        }
+        else
+        {
+            pathFile = svg_path;
+        }
+
+        pathFile += svg_name += ".";
+        pathFile += svg_type;
+
         // cout << pathFile << endl;
-    }
-    else
-    {
-        pathFile = svg_path;
-    }
 
-    pathFile += svg_name += ".";
-    pathFile += svg_type;
+        //SVG file
+        statusLoad = svg_file.LoadFile(pathFile.c_str());
 
-    // cout << pathFile << endl;
+        if(statusLoad != XML_SUCCESS) //Test if file has been opened correctly
+        {
+            cerr << "Error opening svg file\nProgram will be finished" << endl;
+            exit(XML_ERROR_FILE_READ_ERROR);
+        }
 
-    //SVG file
-    statusLoad = svg_file.LoadFile(pathFile.c_str());
+        pRoot = svg_file.FirstChild(); //Get first element
 
-    if(statusLoad != XML_SUCCESS) //Test if file has been opened correctly
-    {
-        cerr << "Error opening svg file\nProgram will be finished" << endl;
-        exit(XML_ERROR_FILE_READ_ERROR);
-    }
-
-    pRoot = svg_file.FirstChild(); //Get first element
-
-    if(!pRoot)
-    {
-        cerr << "Error parsing element on svg file\nProgram will be finished" << endl;
-        exit(XML_ERROR_PARSING_ELEMENT);
-    }
-//    cout << pRoot->Value() << endl;
+        if(!pRoot)
+        {
+            cerr << "Error parsing element on svg file\nProgram will be finished" << endl;
+            exit(XML_ERROR_PARSING_ELEMENT);
+        }
+    //    cout << pRoot->Value() << endl;
 
     pElem = pRoot->FirstChildElement();
     // cout << pElem->Value() << endl;
@@ -220,9 +228,20 @@ void readXMLFile(const char *path)
 
 //OpenGL functions
 
-void drawRectangle(float x1, float y1, float x2, float y2, const float colors[3])
+void drawRectangle(float x1, float y1, float x2, float y2, const float colors[3], float alpha)
 {
-    glColor3fv((GLfloat*)(colors));
+
+    float cor[4];
+
+    float* _cor = (GLfloat*)(colors);
+
+    cor[0] = _cor[0];
+    cor[1] = _cor[1];
+    cor[2] = _cor[2];
+    cor[3] = alpha;
+
+    glColor4fv(cor);
+
     glBegin(GL_POLYGON);
         glVertex3f(x1, y1, 0.0);
         glVertex3f(x1, y2, 0.0);
@@ -231,10 +250,21 @@ void drawRectangle(float x1, float y1, float x2, float y2, const float colors[3]
     glEnd();
 }
 
-void drawCircle(float xc, float yc, float radius, const float colors[3], int resolution)
+void drawCircle(float xc, float yc, float radius, const float colors[3], int resolution, float alpha)
 {
     float dx, dy;
-    glColor3fv((GLfloat*)(colors));
+
+    float cor[4];
+
+    float* _cor = (GLfloat*)(colors);
+
+    cor[0] = _cor[0];
+    cor[1] = _cor[1];
+    cor[2] = _cor[2];
+    cor[3] = alpha;
+
+    glColor4fv(cor);
+
     glBegin(GL_TRIANGLE_FAN);
 		glVertex3f(xc, yc, 0);
 		for(int i = 0; i <= resolution; i++)
@@ -246,10 +276,20 @@ void drawCircle(float xc, float yc, float radius, const float colors[3], int res
     glEnd();
 }
 
-void drawEllipse(float xc, float yc, float width, float height, const float colors[3], int resolution)
+void drawEllipse(float xc, float yc, float width, float height, const float colors[3], int resolution, float alpha)
 {
     float dx, dy;
-    glColor3fv((GLfloat*)(colors));
+
+    float cor[4];
+
+    float* _cor = (GLfloat*)(colors);
+
+    cor[0] = _cor[0];
+    cor[1] = _cor[1];
+    cor[2] = _cor[2];
+    cor[3] = alpha;
+
+    glColor4fv(cor);
     glBegin(GL_TRIANGLE_FAN);
 		glVertex2f(xc, yc);
 		for(int i = 0; i <= resolution; i++)
@@ -269,6 +309,12 @@ void init(void)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0.0, 2*arena[0].getRadius(), 0.0, 2*arena[0].getRadius(), -1.0, 1.0);
+
+    //glClearColor( 0.0f, 0.1f, 0.0f, 0.5f );
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    configObservator();
 }
 
 // Flags to check the result of the game
@@ -277,46 +323,55 @@ bool LOSE_FLAG = false;
 
 void display(void)
 {
-    /*Cleaning pixels */
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    configHub();
+    drawHub();
 
+    configGame();
+    drawAll();
+
+    configRetrovisor();
+    drawAll();
+
+    configMiniMapa();
+    drawAll(0.2);
+
+    glutSwapBuffers();
+}
+
+void drawHub()
+{
     if(WIN_FLAG)
         printMessage(MainWindow.getWidth()/4, MainWindow.getHeight()/2, "Congratulations!!! You won the game");
     else if(LOSE_FLAG)
-            printMessage(MainWindow.getWidth()/4, MainWindow.getHeight()/2, "Game Over!!!   An enemy hit you");
-         else
-        {
-            printClock(MainWindow.getWidth() - MainWindow.getWidth() / 4, MainWindow.getHeight() - 20);
+        printMessage(MainWindow.getWidth()/4, MainWindow.getHeight()/2, "Game Over!!!   An enemy hit you");
+    else
+        printClock(MainWindow.getWidth() - MainWindow.getWidth() / 4, MainWindow.getHeight() - 20);
+}
 
-            for (int i = 0; i < 2; i++)
-                arena[i].draw();
+void drawAll(float alpha)
+{
 
-            rect.draw();
+    if(!WIN_FLAG && !LOSE_FLAG)
+    {
 
-            for (list<Carro>::iterator it = enemies.begin(); it != enemies.end(); it++)
-                (*it).draw('e');
+        for (int i = 0; i < 2; i++)
+            arena[i].draw(alpha);
 
-            player.draw();
+        rect.draw(alpha);
 
-            for (list<Tiro>::iterator it = playerShots.begin(); it != playerShots.end(); it++)
-                (*it).draw();
+        for (list<Carro>::iterator it = enemies.begin(); it != enemies.end(); it++)
+            (*it).draw('e', alpha);
 
-            for (list<Tiro>::iterator it = enemiesShots.begin(); it != enemiesShots.end(); it++)
-                (*it).draw();
-        }
+        player.draw('p',alpha);
 
+        for (list<Tiro>::iterator it = playerShots.begin(); it != playerShots.end(); it++)
+            (*it).draw(alpha);
 
-    /*float CAMERA_DISTANCE = 60;
-    float dx = CAMERA_DISTANCE*cos(player.getCarRotation() * M_PI/180.0);
-    float dy = CAMERA_DISTANCE*sin(player.getCarRotation() * M_PI/180.0);
-    float YELLOW_COLOR[3] = {1.0, 1.0, 0.0};
-    float* gunTip = player.getGunTip();
-    drawCircle(gunTip[0], gunTip[1], 5, YELLOW_COLOR , 100);
-    */
-
-    glutSwapBuffers();
-
+        for (list<Tiro>::iterator it = enemiesShots.begin(); it != enemiesShots.end(); it++)
+            (*it).draw(alpha);
+    }
 }
 
 bool START_FLAG = false; //Flag to indicate beginning the game
@@ -406,7 +461,7 @@ void idle(void)
         }
         // End player collision verification
 
-//      ///////////////////////////////////////// ENEMY COLISION VERIFICATION //////////////////////////////////////////
+        ///////////////////////////////////////// ENEMY COLISION VERIFICATION //////////////////////////////////////////
         int i = 0;
         for(list<Carro>::iterator en = enemies.begin(); en != enemies.end(); en++)
         {
@@ -415,7 +470,7 @@ void idle(void)
             move_vector[X_AXIS] = p[X_AXIS];
             move_vector[Y_AXIS] = p[Y_AXIS];
 
-//            cout << "x " << move_vector[0] << " y " << move_vector[1] << endl;
+            //cout << "x " << move_vector[0] << " y " << move_vector[1] << endl;
 
             tx = en->getXc();
             ty = en->getYc();
@@ -455,10 +510,10 @@ void idle(void)
             {
                 en->setYc(ty);
             }
-//          ////////////////////////////////  End enemy collision verification ///////////////////////////////////
+        ////////////////////////////////  End enemy collision verification ///////////////////////////////////
         }
 
-        //    ///////////////////////////////////////// ENEMIES SHOTS ////////////////////////////////////////
+        ///////////////////////////////////////// ENEMIES SHOTS ////////////////////////////////////////
 
         if(SHOT_FLAG) {
             for (list<Carro>::iterator en = enemies.begin(); en != enemies.end(); en++) {
@@ -468,7 +523,7 @@ void idle(void)
             SHOT_FLAG = false;
         }
 
-        //  /////////////////////////////////// Shot moving /////////////////////////////////////////////////
+        /////////////////////////////////// Shot moving /////////////////////////////////////////////////
 
         //Player shots
         for (list<Tiro>::iterator it = playerShots.begin(); it != playerShots.end(); it++)
@@ -514,11 +569,11 @@ void idle(void)
                     break;
             }
         }
-        //    cout << shoots.size() << endl;
+        //cout << shoots.size() << endl;
 
-        //    //////////////////////////////// End shot moving //////////////////////////////////////////////
+        ////////////////////////////////// End shot moving //////////////////////////////////////////////
 
-        //    /////////////////////////////////////// Checking victory /////////////////////////////////////////
+        ///////////////////////////////////////// Checking victory /////////////////////////////////////////
 
         if (player.getXc() > rect.getVertices(0, X_AXIS) && player.getXc() < rect.getVertices(3, X_AXIS))
         {
@@ -543,9 +598,7 @@ void idle(void)
 
     }
 
-    configObservator();
     glutPostRedisplay();
-
 }
 
 void keyUp (unsigned char key, int x, int y)
@@ -625,19 +678,19 @@ void specialFunc(int key, int x, int y)
         case GLUT_KEY_F1:
             camera.setType(CAMERA_01);
             camera.setAngle(50);
-            configProjection();
+            configGame();
         break;
 
         case GLUT_KEY_F2:
             camera.setType(CAMERA_02);
             camera.setAngle(50);
-            configProjection();
+            configGame();
         break;
 
         case GLUT_KEY_F3:
             camera.setType(CAMERA_03);
             camera.setAngle(50);
-            configProjection();
+            configGame();
         break;
     }
 
@@ -660,9 +713,20 @@ void mouse(int key, int state, int x, int y)
 
         if(START_FLAG) {
             Tiro t = player.shoot();
-//        cout << "ShotID " << t.getId() << endl;
+            //cout << "ShotID " << t.getId() << endl;
             playerShots.push_back(t);
         }
+    }
+
+    if(key == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
+    {
+        lastX = x;
+        lastY = y;
+        buttonDown = 1;
+    }
+
+    if (key == GLUT_RIGHT_BUTTON && state == GLUT_UP) {
+        buttonDown = 0;
     }
 }
 
@@ -674,6 +738,35 @@ void passiveMouse(int x, int y)
     player.setGunRotation(theta);
 
     // cout << player.getGunRotation() << endl;
+    
+}
+
+void motionMouse(int x, int y)
+{
+    if (!buttonDown)
+        return;
+
+    float dx = x - lastX;
+    float dy =  y - lastY;
+
+    //TO-DO depois tem q resolver isso, do nada dando uns delta muito alto, abaixo solução temporaria
+
+    const int MAIOR_DELTA = 5;
+
+    if(dx > MAIOR_DELTA) dx = MAIOR_DELTA;
+    else if(dx < -MAIOR_DELTA) dx = -MAIOR_DELTA;
+
+    if(dy > MAIOR_DELTA) dy = MAIOR_DELTA;
+    else if(dy < -MAIOR_DELTA) dy = -MAIOR_DELTA;
+
+    camXYAngle += dx;
+    camXZAngle += dy;
+
+    camXYAngle = (int)camXYAngle % 360;
+    camXZAngle = (int)camXZAngle % 360;
+
+    lastX = x;
+    lastY = y;
 }
 
 //Clock variables
@@ -728,6 +821,7 @@ void checkShotTime(double time) {
         SHOT_FLAG = true;
     }
 }
+
 void printMessage(int x, int y, const char* message)
 {
     const char *tmpStr;
@@ -786,11 +880,22 @@ void configObservator(void)
 
     if(camera.getType() == CAMERA_01)
     {
+
+        //vertical
+
+        //glTranslatef(player.getXc(),player.getYc(),1);
+        if(camXZAngle > 90)
+            camXZAngle = 90;
+        else if(camXZAngle < -90)
+            camXZAngle = -90;
+
+        glRotatef(camXZAngle,1,0,0);
+        //glRotatef(camXYAngle,0,1,0);
        
         float DISTANCE_BACKWARD = 60;
 
-        float dx = DISTANCE_BACKWARD*cos(player.getCarRotation() * M_PI/180.0);
-        float dy = DISTANCE_BACKWARD*sin(player.getCarRotation() * M_PI/180.0);
+        float dx = DISTANCE_BACKWARD*cos( ( player.getCarRotation() + camXYAngle ) * M_PI/180.0);
+        float dy = DISTANCE_BACKWARD*sin( ( player.getCarRotation() + camXYAngle ) * M_PI/180.0);
 
         //printf("ObsX: %f ObsY: %f ObsZ: %f\n", player.getXc() + dx, player.getYc() + dy, obsZ );
         //printf("X: %f Y: %f\n", player.getXc(), player.getYc() );
@@ -808,7 +913,6 @@ void configObservator(void)
         gluLookAt( camera.getSrcX(), camera.getSrcY(), camera.getSrcZ(), 
                    camera.getDstX(), camera.getDstY(), camera.getDstZ(), 
                     0, 0, 1 );
-
     }
     else if(camera.getType() == CAMERA_02)
     {
@@ -817,9 +921,9 @@ void configObservator(void)
         float dx = DISTANCE_FORWARD*cos(player.getCarRotation() * M_PI/180.0);
         float dy = DISTANCE_FORWARD*sin(player.getCarRotation() * M_PI/180.0);
 
-        camera.setSrcX(player.getXc());
-        camera.setSrcY(player.getYc());
-        camera.setSrcZ(30); //altura
+        camera.setSrcX(player.getXc() - dx*0.3);
+        camera.setSrcY(player.getYc() - dy*0.3);
+        camera.setSrcZ(20); //altura
 
         camera.setDstX(player.getXc()+dx);
         camera.setDstY(player.getYc()+dy);
@@ -836,12 +940,14 @@ void configObservator(void)
 
         float* gunTip = player.getGunTip();
 
-        camera.setSrcX(gunTip[0]);
-        camera.setSrcY(gunTip[1]);
-        camera.setSrcZ(30);
+        
 
         float dx = DISTANCE_FORWARD*cos( (player.getCarRotation() + player.getGunRotation()) * M_PI/180.0);
         float dy = DISTANCE_FORWARD*sin( (player.getCarRotation() + player.getGunRotation()) * M_PI/180.0);
+
+        camera.setSrcX(gunTip[0]-dx*0.3);
+        camera.setSrcY(gunTip[1]-dy*0.3);
+        camera.setSrcZ(10);
 
         camera.setDstX(player.getXc()+dx);
         camera.setDstY(player.getYc()+dy);
@@ -855,8 +961,13 @@ void configObservator(void)
 }
 
 // Função usada para especificar o volume de visualização
-void configProjection(void)
+void configGame(void)
 {
+
+    glLoadIdentity();
+
+    glViewport(0, 0, _w, _h-200);
+
     // Especifica sistema de coordenadas de projeção
     glMatrixMode(GL_PROJECTION);
 
@@ -869,19 +980,78 @@ void configProjection(void)
     configObservator();
 }
 
+void configRetrovisor()
+{
+
+    glLoadIdentity();
+
+    glViewport(0, _h-200, _w, 200);
+    // Especifica sistema de coordenadas de projeção
+    glMatrixMode(GL_PROJECTION);
+
+    // Inicializa sistema de coordenadas de projeção
+    glLoadIdentity();
+
+    gluPerspective(camera.getAngle(),camera.getAspect(),0.5,500);
+
+    // Especifica sistema de coordenadas do modelo
+    glMatrixMode(GL_MODELVIEW);
+
+    // Inicializa sistema de coordenadas do modelo
+    glLoadIdentity();
+
+    float DISTANCE_FORWARD = 60;
+
+    float dx = DISTANCE_FORWARD*cos(player.getCarRotation() * M_PI/180.0);
+    float dy = DISTANCE_FORWARD*sin(player.getCarRotation() * M_PI/180.0);
+
+    camera.setSrcX(player.getXc());
+    camera.setSrcY(player.getYc());
+    camera.setSrcZ(20); //altura
+
+    camera.setDstX(player.getXc()-dx);
+    camera.setDstY(player.getYc()-dy);
+    camera.setDstZ(0);
+
+    //camera atras do carro
+    gluLookAt( camera.getSrcX(), camera.getSrcY(), camera.getSrcZ(), 
+               camera.getDstX(), camera.getDstY(), camera.getDstZ(), 
+                0, 0, 1 );
+}
+
+void configMiniMapa()
+{
+    glLoadIdentity();
+
+    glViewport(_w/2, 0, _w/2, _h/2);
+
+    glMatrixMode(GL_PROJECTION);
+
+    // Inicializa sistema de coordenadas de projeção
+    glLoadIdentity();
+
+    glOrtho(0, _w, 0, _h, -1.0, 1.0);
+}
+
+void configHub()
+{
+    glLoadIdentity();
+    glViewport(0, 0, _w, _h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, _w, 0, _h, -1.0, 1.0);
+}
+
 // Função callback chamada quando o tamanho da janela é alterado 
 void reshape(GLsizei w, GLsizei h)
 {
     // Para previnir uma divisão por zero
     if ( h == 0 ) h = 1;
-
-    // Especifica as dimensões da viewport
-    glViewport(0, 0, w, h);
  
     // Calcula a correção de aspecto
     camera.setAspect((GLfloat)w/(GLfloat)h);
 
-    configProjection();
+    _w = w;
+    _h = h;
 
 }
-

@@ -32,7 +32,7 @@ public:
 
     void setShootRotation(float shootRotation);
 
-    void draw();
+    void draw(float alpha = 1);
 
     void move(double time);
 

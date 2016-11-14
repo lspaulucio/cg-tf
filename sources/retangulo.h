@@ -34,7 +34,7 @@ public:
 
     bool insideSquare(float x, float y) const;
 
-    void draw();
+    void draw(float alpha = 1);
 
     ~Retangulo();
 

@@ -36,14 +36,20 @@ void checkShotTime(double time);
 void printMessage(int x, int y, const char* message);
 
 //Drawing functions
-void drawRectangle(float x1, float y1, float x2, float y2, const float colors[3] = DEFAULT_COLOR);
-void drawCircle(float xc, float yc, float radius, const float colors[3] = DEFAULT_COLOR, int resolution = 100);
-void drawEllipse(float xc, float yc, float width, float height, const float colors[3] = DEFAULT_COLOR, int resolution = 100);
+void drawRectangle(float x1, float y1, float x2, float y2, const float colors[3] = DEFAULT_COLOR, float alpha = 1);
+void drawCircle(float xc, float yc, float radius, const float colors[3] = DEFAULT_COLOR, int resolution = 100, float alpha = 1);
+void drawEllipse(float xc, float yc, float width, float height, const float colors[3] = DEFAULT_COLOR, int resolution = 100, float alpha = 1);
 
 //Câmera
 void configObservator(void);
-void configProjection(void);
+void configGame(void);
+void configRetrovisor(void);
 void reshape(GLsizei w, GLsizei h);
 void specialFunc(int key, int x, int y);
+void drawAll(float alpha = 1);
+void drawHub(void);
+void configHub();
+void configMiniMapa(void);
+void motionMouse(int x, int y);
 
 #endif //FUNCOES_H

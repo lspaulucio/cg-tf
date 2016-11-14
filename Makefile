@@ -7,7 +7,7 @@ AUTHOR_NAME=LeonardoSantosPaulucio
 CC=g++
 
 #Compiler flags
-FLAGS=-Wall
+FLAGS=-Wall -g
 
 #Libs
 OPENGL_LIB=-lGL -lGLU -lglut

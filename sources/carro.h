@@ -63,7 +63,7 @@ public:
 
     void setWheelRotation(float rotation);
 
-    void draw(char type = 'p');
+    void draw(char type = 'p', float alpha = 1);
 
     float* move(bool direction, double time);
 

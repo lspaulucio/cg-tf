@@ -35,7 +35,7 @@ class Circulo: public Forma
 
         bool outsideCircle(Circulo& circle) const;
 
-        void draw();
+        void draw(float alpha = 1);
 
         ~Circulo();
 
