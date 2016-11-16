@@ -357,7 +357,26 @@ void drawAll(float alpha)
     {
 
         for (int i = 0; i < 2; i++)
+        {
             arena[i].draw(alpha);
+
+            GLUquadric *obj = gluNewQuadric();
+            gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
+            glColor4f(0, 0, 0, 0.5);
+            glPushMatrix();
+            glTranslatef(arena[i].getXc(), arena[i].getYc(),0);
+
+            if(i)
+                gluQuadricOrientation(obj, GLU_INSIDE);
+            else
+                gluQuadricOrientation(obj, GLU_OUTSIDE);
+
+            gluQuadricNormals(obj, GL_SMOOTH);
+            // gluQuadricTexture(obj, textureSun);
+            gluCylinder(obj, arena[i].getRadius(), arena[i].getRadius(), 100, 100, 5);
+            gluDeleteQuadric(obj);
+            glPopMatrix();
+        }
 
         rect.draw(alpha);
 
@@ -738,7 +757,7 @@ void passiveMouse(int x, int y)
     player.setGunRotation(theta);
 
     // cout << player.getGunRotation() << endl;
-    
+
 }
 
 void motionMouse(int x, int y)
@@ -841,29 +860,29 @@ void printMessage(int x, int y, const char* message)
 
 void DefineIluminacao (void)
 {
-    GLfloat luzAmbiente[4]={0.2,0.2,0.2,1.0}; 
-    GLfloat luzDifusa[4]={0.7,0.7,0.7,1.0};    // "cor" 
-    GLfloat luzEspecular[4]={1.0, 1.0, 1.0, 1.0};// "brilho" 
+    GLfloat luzAmbiente[4]={0.2,0.2,0.2,1.0};
+    GLfloat luzDifusa[4]={0.7,0.7,0.7,1.0};    // "cor"
+    GLfloat luzEspecular[4]={1.0, 1.0, 1.0, 1.0};// "brilho"
     GLfloat posicaoLuz[4]={0.0, -40.0, 0.0, 1.0};
 
     // Capacidade de brilho do material
-    GLfloat especularidade[4]={1.0,1.0,1.0,1.0}; 
+    GLfloat especularidade[4]={1.0,1.0,1.0,1.0};
     GLint especMaterial = 60;
 
-    // Define a refletância do material 
+    // Define a refletância do material
     glMaterialfv(GL_FRONT,GL_SPECULAR, especularidade);
     // Define a concentração do brilho
     glMateriali(GL_FRONT,GL_SHININESS,especMaterial);
 
-    // Ativa o uso da luz ambiente 
+    // Ativa o uso da luz ambiente
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente);
 
     // Define os parâmetros da luz de número 0
-    glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente); 
+    glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa );
     glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular );
-    glLightfv(GL_LIGHT0, GL_POSITION, posicaoLuz );  
-    
+    glLightfv(GL_LIGHT0, GL_POSITION, posicaoLuz );
+
     // Habilita o modelo de colorização de Gouraud
     glShadeModel(GL_SMOOTH);
 }
@@ -891,7 +910,7 @@ void configObservator(void)
 
         glRotatef(camXZAngle,1,0,0);
         //glRotatef(camXYAngle,0,1,0);
-       
+
         float DISTANCE_BACKWARD = 60;
 
         float dx = DISTANCE_BACKWARD*cos( ( player.getCarRotation() + camXYAngle ) * M_PI/180.0);
@@ -910,8 +929,8 @@ void configObservator(void)
         camera.setDstZ(0);
 
         //camera atras do carro
-        gluLookAt( camera.getSrcX(), camera.getSrcY(), camera.getSrcZ(), 
-                   camera.getDstX(), camera.getDstY(), camera.getDstZ(), 
+        gluLookAt( camera.getSrcX(), camera.getSrcY(), camera.getSrcZ(),
+                   camera.getDstX(), camera.getDstY(), camera.getDstZ(),
                     0, 0, 1 );
     }
     else if(camera.getType() == CAMERA_02)
@@ -930,8 +949,8 @@ void configObservator(void)
         camera.setDstZ(0);
 
         //camera atras do carro
-        gluLookAt( camera.getSrcX(), camera.getSrcY(), camera.getSrcZ(), 
-                   camera.getDstX(), camera.getDstY(), camera.getDstZ(), 
+        gluLookAt( camera.getSrcX(), camera.getSrcY(), camera.getSrcZ(),
+                   camera.getDstX(), camera.getDstY(), camera.getDstZ(),
                     0, 0, 1 );
     }
     else if(camera.getType() == CAMERA_03) //canhao
@@ -940,7 +959,7 @@ void configObservator(void)
 
         float* gunTip = player.getGunTip();
 
-        
+
 
         float dx = DISTANCE_FORWARD*cos( (player.getCarRotation() + player.getGunRotation()) * M_PI/180.0);
         float dy = DISTANCE_FORWARD*sin( (player.getCarRotation() + player.getGunRotation()) * M_PI/180.0);
@@ -954,8 +973,8 @@ void configObservator(void)
         camera.setDstZ(0);
 
         //camera atras do carro
-        gluLookAt( camera.getSrcX(), camera.getSrcY(), camera.getSrcZ(), 
-                   camera.getDstX(), camera.getDstY(), camera.getDstZ(), 
+        gluLookAt( camera.getSrcX(), camera.getSrcY(), camera.getSrcZ(),
+                   camera.getDstX(), camera.getDstY(), camera.getDstZ(),
                     0, 0, 1 );
     }
 }
@@ -1014,8 +1033,8 @@ void configRetrovisor()
     camera.setDstZ(0);
 
     //camera atras do carro
-    gluLookAt( camera.getSrcX(), camera.getSrcY(), camera.getSrcZ(), 
-               camera.getDstX(), camera.getDstY(), camera.getDstZ(), 
+    gluLookAt( camera.getSrcX(), camera.getSrcY(), camera.getSrcZ(),
+               camera.getDstX(), camera.getDstY(), camera.getDstZ(),
                 0, 0, 1 );
 }
 
@@ -1042,12 +1061,12 @@ void configHub()
     glOrtho(0, _w, 0, _h, -1.0, 1.0);
 }
 
-// Função callback chamada quando o tamanho da janela é alterado 
+// Função callback chamada quando o tamanho da janela é alterado
 void reshape(GLsizei w, GLsizei h)
 {
     // Para previnir uma divisão por zero
     if ( h == 0 ) h = 1;
- 
+
     // Calcula a correção de aspecto
     camera.setAspect((GLfloat)w/(GLfloat)h);
 
