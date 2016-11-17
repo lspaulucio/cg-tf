@@ -65,6 +65,8 @@ public:
 
     void draw(char type = 'p', float alpha = 1);
 
+    void draw3d(char type = 'p', float alpha = 1);
+
     float* move(bool direction, double time);
 
     float* randomMove(double time, int id);

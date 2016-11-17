@@ -250,6 +250,90 @@ void drawRectangle(float x1, float y1, float x2, float y2, const float colors[3]
     glEnd();
 }
 
+void drawCube(float length, float width, float height, const float colors[3], float alpha)
+{
+    float l = length/2;
+    float w = width/2;
+    float h = height/2;
+
+    glColor3fv(colors);
+
+    glBegin(GL_TRIANGLE_FAN);
+	// top
+	// glColor3f(0.0f, 0.0f, 0.0f);
+	glNormal3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(-w, l, h);
+	glVertex3f(w, l, h);
+	glVertex3f(w, l, -h);
+	glVertex3f(-w, l, -h);
+
+	glEnd();
+
+	glBegin(GL_TRIANGLE_FAN);
+	// front
+	// glColor3f(0.0f, 0.0f, 1.0f);
+	glNormal3f(0.0f, 0.0f, 1.0f);
+	glVertex3f(w, -l, h);
+	glVertex3f(w, l, h);
+	glVertex3f(-w, l, h);
+	glVertex3f(-w, -l, h);
+
+	glEnd();
+
+	glBegin(GL_TRIANGLE_FAN);
+	// right
+	// glColor3f(0.0f, 1.0f, 0.0f);
+	glNormal3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(w, l, -h);
+	glVertex3f(w, l, h);
+	glVertex3f(w, -l, h);
+	glVertex3f(w, -l, -h);
+
+	glEnd();
+
+	glBegin(GL_TRIANGLE_FAN);
+	// left
+	// glColor3f(0.0f, 1.0f, 1.0f);
+	glNormal3f(-1.0f, 0.0f, 0.0f);
+	glVertex3f(-w, -l, h);
+	glVertex3f(-w, l, h);
+	glVertex3f(-w, l, -h);
+	glVertex3f(-w, -l, -h);
+
+	glEnd();
+
+	glBegin(GL_TRIANGLE_FAN);
+	// bottom
+	// glColor3f(1.0f, 0.0f, 0.0f);
+	glNormal3f(0.0f, -1.0f, 0.0f);
+	glVertex3f(w, -l, h);
+	glVertex3f(-w, -l, h);
+	glVertex3f(-w, -l, -h);
+	glVertex3f(w, -l, -h);
+
+	glEnd();
+
+	glBegin(GL_TRIANGLE_FAN);
+	// back
+	// glColor3f(1.0f, 0.0f, 1.0f);
+	glNormal3f(0.0f, 0.0f, -1.0f);
+	glVertex3f(w, l, -h);
+	glVertex3f(w, -l, -h);
+	glVertex3f(-w, -l, -h);
+	glVertex3f(-w, l, -h);
+
+	glEnd();
+}
+
+void drawCylinder(float radius, float height)
+{
+    GLUquadric *obj = gluNewQuadric();
+    gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
+    gluQuadricNormals(obj, GL_SMOOTH);//GL_FLAT / GL_SMOOTH
+    gluCylinder(obj, radius, radius, height, 100, 100);
+    gluDeleteQuadric(obj);
+}
+
 void drawCircle(float xc, float yc, float radius, const float colors[3], int resolution, float alpha)
 {
     float dx, dy;
@@ -301,6 +385,16 @@ void drawEllipse(float xc, float yc, float width, float height, const float colo
     glEnd();
 }
 
+void drawWheel()
+{
+    glPushMatrix();
+    drawCircle(0, 0, 20);
+    glRotatef(90,0,1,0);
+    drawCylinder(20, 5);
+    drawCircle(0, 0, 20);
+    glPopMatrix();
+}
+
 void init(void)
 {
     /*Selecting background color*/
@@ -329,7 +423,7 @@ void display(void)
     drawHub();
 
     configGame();
-    drawAll();
+    drawAll(1.0);
 
     configRetrovisor();
     drawAll();
@@ -383,7 +477,7 @@ void drawAll(float alpha)
         for (list<Carro>::iterator it = enemies.begin(); it != enemies.end(); it++)
             (*it).draw('e', alpha);
 
-        player.draw('p',alpha);
+        player.draw3d('p',alpha);
 
         for (list<Tiro>::iterator it = playerShots.begin(); it != playerShots.end(); it++)
             (*it).draw(alpha);
@@ -903,12 +997,7 @@ void configObservator(void)
         //vertical
 
         //glTranslatef(player.getXc(),player.getYc(),1);
-        if(camXZAngle > 90)
-            camXZAngle = 90;
-        else if(camXZAngle < -90)
-            camXZAngle = -90;
 
-        glRotatef(camXZAngle,1,0,0);
         //glRotatef(camXYAngle,0,1,0);
 
         float DISTANCE_BACKWARD = 60;
@@ -916,13 +1005,27 @@ void configObservator(void)
         float dx = DISTANCE_BACKWARD*cos( ( player.getCarRotation() + camXYAngle ) * M_PI/180.0);
         float dy = DISTANCE_BACKWARD*sin( ( player.getCarRotation() + camXYAngle ) * M_PI/180.0);
 
+
+        /*if(camXZAngle > 90)
+            camXZAngle = 90;
+        else if(camXZAngle < -90)
+            camXZAngle = -90;*/
+
+        //dx += DISTANCE_BACKWARD*cos( ( player.getCarRotation() + camXZAngle ) * M_PI/180.0);
+        //dy += DISTANCE_BACKWARD*cos( ( player.getCarRotation() + camXZAngle ) * M_PI/180.0);
+        float dz = DISTANCE_BACKWARD*sin( ( player.getCarRotation() + camXZAngle ) * M_PI/180.0);
+
+
+
+        glRotatef(camXZAngle,1,0,0);
+
         //printf("ObsX: %f ObsY: %f ObsZ: %f\n", player.getXc() + dx, player.getYc() + dy, obsZ );
         //printf("X: %f Y: %f\n", player.getXc(), player.getYc() );
         //printf("CarRotation: %f\n", player.getCarRotation() );
 
         camera.setSrcX(player.getXc() - dx);
         camera.setSrcY(player.getYc() - dy);
-        camera.setSrcZ(30);
+        camera.setSrcZ(dz);
 
         camera.setDstX(player.getXc());
         camera.setDstY(player.getYc());
