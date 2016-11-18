@@ -15,7 +15,7 @@ private:
     float carSpeed, shotSpeed;
     float shootFrequence;
     float carDirection[3], gunDirection[3], wheelDirection[3];
-    float carRotation, gunRotation, wheelRotation;
+    float carRotation, gunRotation, gunRotationZ, wheelRotation;
     int randomWheel, randomGun, randomDirection, randomTime;
 
 public:
@@ -58,6 +58,10 @@ public:
     float getGunRotation() const;
 
     void setGunRotation(float rotation);
+
+    float getGunRotationZ() const;
+
+    void setGunRotationZ(float rotation);
 
     float getWheelRotation() const;
 

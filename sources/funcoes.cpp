@@ -325,12 +325,30 @@ void drawCube(float length, float width, float height, const float colors[3], fl
 	glEnd();
 }
 
+void drawCone(float radius, float height)
+{
+    GLUquadric *obj = gluNewQuadric();
+    gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
+    gluQuadricNormals(obj, GL_SMOOTH);//GL_FLAT / GL_SMOOTH
+    gluCylinder(obj, radius, 0, height, 100, 100);
+    gluDeleteQuadric(obj);
+}
+
 void drawCylinder(float radius, float height)
 {
     GLUquadric *obj = gluNewQuadric();
     gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
     gluQuadricNormals(obj, GL_SMOOTH);//GL_FLAT / GL_SMOOTH
     gluCylinder(obj, radius, radius, height, 100, 100);
+    gluDeleteQuadric(obj);
+}
+
+void drawSphere(float radius)
+{
+    GLUquadric *obj = gluNewQuadric();
+    gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
+    gluQuadricNormals(obj, GL_SMOOTH);//GL_FLAT / GL_SMOOTH
+    gluSphere(obj, radius, 100, 100);
     gluDeleteQuadric(obj);
 }
 
@@ -385,13 +403,13 @@ void drawEllipse(float xc, float yc, float width, float height, const float colo
     glEnd();
 }
 
-void drawWheel()
+void drawWheel(float radius, float width)
 {
     glPushMatrix();
-    drawCircle(0, 0, 20);
-    glRotatef(90,0,1,0);
-    drawCylinder(20, 5);
-    drawCircle(0, 0, 20);
+    glRotatef(90, 1.0, 0.0, 0.0);
+    glRotatef(-90, 0.0, 1.0, 0.0);
+    drawCircle(0, 0, radius);
+    drawCylinder(radius, width);
     glPopMatrix();
 }
 
@@ -821,8 +839,10 @@ void mouse(int key, int state, int x, int y)
     {
         int hx = MainWindow.getWidth();
         int theta = -120.0/hx*x + 60.0;
+        int alphaZ = -90.0/hy*y + 22.5;
 
         player.setGunRotation(theta);
+        player.setGunRotationZ(alphaZ);
 
         if(START_FLAG) {
             Tiro t = player.shoot();
@@ -845,10 +865,15 @@ void mouse(int key, int state, int x, int y)
 
 void passiveMouse(int x, int y)
 {
-    int hx = MainWindow.getWidth();
+    int hx = MainWindow.getWidth(), hy = MainWindow.getHeight();
+
+    y = hy - y; //Adjusting Y-Axis
+
     int theta = -120.0/hx*x + 60.0;
+    int alphaZ = -90.0/hy*y + 22.5;
 
     player.setGunRotation(theta);
+    player.setGunRotationZ(alphaZ);
 
     // cout << player.getGunRotation() << endl;
 
@@ -1034,7 +1059,7 @@ void configObservator(void)
         gluLookAt( camera.getSrcX(), camera.getSrcY(), camera.getSrcZ(),
                    camera.getDstX(), camera.getDstY(), camera.getDstZ(),
                    0 , 0, z );
-    
+
     }
     else if(camera.getType() == CAMERA_02)
     {

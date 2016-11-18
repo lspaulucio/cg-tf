@@ -41,7 +41,9 @@ void drawCircle(float xc, float yc, float radius, const float colors[3] = DEFAUL
 void drawEllipse(float xc, float yc, float width, float height, const float colors[3] = DEFAULT_COLOR, int resolution = 100, float alpha = 1);
 void drawCube(float length, float width, float height, const float colors[3], float alpha);
 void drawCylinder(float radius, float height);
-void drawWheel();
+void drawSphere(float radius);
+void drawCone(float radius, float height);
+void drawWheel(float radius, float width);
 //Câmera
 void configObservator(void);
 void configGame(void);
