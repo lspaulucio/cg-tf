@@ -864,7 +864,7 @@ void motionMouse(int x, int y)
 
     //TO-DO depois tem q resolver isso, do nada dando uns delta muito alto, abaixo solução temporaria
 
-    const int MAIOR_DELTA = 5;
+    const float MAIOR_DELTA = 4.0;
 
     if(dx > MAIOR_DELTA) dx = MAIOR_DELTA;
     else if(dx < -MAIOR_DELTA) dx = -MAIOR_DELTA;
@@ -877,6 +877,14 @@ void motionMouse(int x, int y)
 
     camXYAngle = (int)camXYAngle % 360;
     camXZAngle = (int)camXZAngle % 360;
+
+
+    if(camXZAngle < 0)
+        camXZAngle = 0;
+    else if(camXZAngle > 180)
+        camXZAngle = 180;
+    if(camXZAngle == 90)
+        camXZAngle = 90.01;
 
     lastX = x;
     lastY = y;
@@ -994,34 +1002,22 @@ void configObservator(void)
     if(camera.getType() == CAMERA_01)
     {
 
-        //vertical
-
-        //glTranslatef(player.getXc(),player.getYc(),1);
-
-        //glRotatef(camXYAngle,0,1,0);
-
         float DISTANCE_BACKWARD = 60;
 
+
         float dx = DISTANCE_BACKWARD*cos( ( player.getCarRotation() + camXYAngle ) * M_PI/180.0);
+        dx*= cos( camXZAngle * M_PI/180.0 );
+
         float dy = DISTANCE_BACKWARD*sin( ( player.getCarRotation() + camXYAngle ) * M_PI/180.0);
+        dy*= cos( camXZAngle * M_PI/180.0 );
 
+        float dz = DISTANCE_BACKWARD * sin( camXZAngle * M_PI/180.0 );
 
-        /*if(camXZAngle > 90)
-            camXZAngle = 90;
-        else if(camXZAngle < -90)
-            camXZAngle = -90;*/
-
-        //dx += DISTANCE_BACKWARD*cos( ( player.getCarRotation() + camXZAngle ) * M_PI/180.0);
-        //dy += DISTANCE_BACKWARD*cos( ( player.getCarRotation() + camXZAngle ) * M_PI/180.0);
-        float dz = DISTANCE_BACKWARD*sin( ( player.getCarRotation() + camXZAngle ) * M_PI/180.0);
-
-
-
-        glRotatef(camXZAngle,1,0,0);
-
-        //printf("ObsX: %f ObsY: %f ObsZ: %f\n", player.getXc() + dx, player.getYc() + dy, obsZ );
+        //printf("ObsX: %f ObsY: %f ObsZ: %f\n", player.getXc() - dx, player.getYc() - dy, dz);
         //printf("X: %f Y: %f\n", player.getXc(), player.getYc() );
         //printf("CarRotation: %f\n", player.getCarRotation() );
+        //printf("camXZAngle: %f\n", camXZAngle);
+        //printf("camXYAngle: %f\n", camXYAngle);
 
         camera.setSrcX(player.getXc() - dx);
         camera.setSrcY(player.getYc() - dy);
@@ -1031,10 +1027,14 @@ void configObservator(void)
         camera.setDstY(player.getYc());
         camera.setDstZ(0);
 
+
+        float z = camXZAngle < 90 ? 1 : -1;
+
         //camera atras do carro
         gluLookAt( camera.getSrcX(), camera.getSrcY(), camera.getSrcZ(),
                    camera.getDstX(), camera.getDstY(), camera.getDstZ(),
-                    0, 0, 1 );
+                   0 , 0, z );
+    
     }
     else if(camera.getType() == CAMERA_02)
     {
@@ -1061,8 +1061,6 @@ void configObservator(void)
         float DISTANCE_FORWARD = 80;
 
         float* gunTip = player.getGunTip();
-
-
 
         float dx = DISTANCE_FORWARD*cos( (player.getCarRotation() + player.getGunRotation()) * M_PI/180.0);
         float dy = DISTANCE_FORWARD*sin( (player.getCarRotation() + player.getGunRotation()) * M_PI/180.0);
@@ -1097,7 +1095,7 @@ void configGame(void)
     glLoadIdentity();
 
     // Especifica a projeção perspectiva(angulo,aspecto,zMin,zMax)
-    gluPerspective(camera.getAngle(),camera.getAspect(),0.5,500);
+    gluPerspective(camera.getAngle(),camera.getAspect(),5, 1000);
 
     configObservator();
 }
@@ -1114,7 +1112,7 @@ void configRetrovisor()
     // Inicializa sistema de coordenadas de projeção
     glLoadIdentity();
 
-    gluPerspective(camera.getAngle(),camera.getAspect(),0.5,500);
+    gluPerspective(camera.getAngle(),camera.getAspect(),5,1000);
 
     // Especifica sistema de coordenadas do modelo
     glMatrixMode(GL_MODELVIEW);

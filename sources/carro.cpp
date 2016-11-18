@@ -425,8 +425,8 @@ void Carro::draw3d(char type, float alpha)
     float carWidth = 140;
     float carLength = 300;
     float carHeight = 25;
-    float ellipseBigAxis = 80;
-    float ellipseSmallAxis = 40;
+    //float ellipseBigAxis = 80;
+    //float ellipseSmallAxis = 40;
     float gunWidth = 20;
     float gunHeight = 90;
     float wheelShaftLength = 30;
