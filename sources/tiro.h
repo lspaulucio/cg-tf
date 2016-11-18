@@ -34,6 +34,8 @@ public:
 
     void draw(float alpha = 1);
 
+    void draw3d(float alpha = 1);    
+
     void move(double time);
 
     bool isInWindow(float x0, float y0, float x1, float y1);

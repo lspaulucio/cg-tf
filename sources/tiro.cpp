@@ -88,6 +88,17 @@ void Tiro::draw(float alpha)
     glEnd();
 }
 
+void Tiro::draw3d(float alpha)
+{
+    GLUquadric *obj = gluNewQuadric();
+    gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
+    gluQuadricNormals(obj, GL_SMOOTH);//GL_FLAT / GL_SMOOTH
+    gluSphere(obj, getRadius(), 100, 100);
+    gluDeleteQuadric(obj);
+}
+
+
+
 void Tiro::move(double time)
 {
     setXc(getXc() + (this->getShootSpeed() * time * getShootDirection()[X_AXIS]));
