@@ -12,6 +12,7 @@ Tiro::Tiro(const Tiro &s) : Circulo(s)
     this->shotSpeed = s.shotSpeed;
     this->shotDirection[X_AXIS] = s.shotDirection[X_AXIS];
     this->shotDirection[Y_AXIS] = s.shotDirection[Y_AXIS];
+    this->shotDirection[Z_AXIS] = s.shotDirection[Z_AXIS];
     this->shotRotation = s.shotRotation;
 }
 
@@ -57,6 +58,8 @@ void Tiro::draw(float alpha)
     cor[2] = _cor[2];
     cor[3] = alpha;
 
+    glPushMatrix();
+    glTranslatef(0,0,getZc());
     glColor4fv(cor);
     glBegin(GL_TRIANGLE_FAN);
     glVertex2f(getXc(), getYc());
@@ -86,23 +89,27 @@ void Tiro::draw(float alpha)
         glVertex2f(dx, dy);
     }
     glEnd();
+    glPopMatrix();
 }
 
 void Tiro::draw3d(float alpha)
 {
+    glColor3fv(RED_COLOR);
+    glPushMatrix();
+    glTranslatef(getXc(), getYc(), getZc());
     GLUquadric *obj = gluNewQuadric();
     gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
     gluQuadricNormals(obj, GL_SMOOTH);//GL_FLAT / GL_SMOOTH
     gluSphere(obj, getRadius(), 100, 100);
     gluDeleteQuadric(obj);
+    glPopMatrix();
 }
-
-
 
 void Tiro::move(double time)
 {
     setXc(getXc() + (this->getShootSpeed() * time * getShootDirection()[X_AXIS]));
     setYc(getYc() + (this->getShootSpeed() * time * getShootDirection()[Y_AXIS]));
+    setZc(getZc() + (this->getShootSpeed() * time * getShootDirection()[Z_AXIS]));
 }
 
 bool Tiro::isInWindow(float x0, float y0, float x1, float y1)

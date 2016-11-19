@@ -2,13 +2,14 @@
 
 Forma::Forma()
 {
-    xc = yc = 0;
+    xc = yc = zc = 0;
 }
 
 Forma::Forma(const Forma &f)
 {
     this->xc = f.xc;
     this->yc = f.yc;
+    this->zc = f.zc;
     this->setRGBColors(f.getRGBColors());
     this->id = f.id;
 }
@@ -94,6 +95,16 @@ float Forma::getYc() const
 void Forma::setYc(float yc)
 {
     this->yc = yc;
+}
+
+float Forma::getZc() const
+{
+    return zc;
+}
+
+void Forma::setZc(float zc)
+{
+    this->zc = zc;
 }
 
 const std::string &Forma::getId() const

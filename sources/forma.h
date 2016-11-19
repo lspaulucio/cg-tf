@@ -12,7 +12,7 @@ class Forma
 {
     private:
         float RGBColors[3];
-        float xc, yc;
+        float xc, yc, zc;
         std::string id;
 
     public:
@@ -36,6 +36,10 @@ class Forma
         void setXc(float xc);
 
         float getYc() const;
+
+        void setZc(float xc);
+
+        float getZc() const;
 
         void setYc(float yc);
 

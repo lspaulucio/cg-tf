@@ -498,7 +498,7 @@ void drawAll(float alpha)
         player.draw3d('p',alpha);
 
         for (list<Tiro>::iterator it = playerShots.begin(); it != playerShots.end(); it++)
-            (*it).draw(alpha);
+            (*it).draw3d(alpha);
 
         for (list<Tiro>::iterator it = enemiesShots.begin(); it != enemiesShots.end(); it++)
             (*it).draw(alpha);

@@ -496,9 +496,8 @@ void Carro::draw3d(char type, float alpha)
 
             glPushMatrix();
                 glTranslatef(0.0, 0.0, carHeight);
-                glColor3fv(YELLOW_COLOR);
-                drawSphere(30);
 
+                glPushMatrix();
                 glTranslatef(0.0, 0.0, 15);
                 //drawing gun
                 glRotatef(this->getGunRotation(), 0.0, 0.0, 1);
@@ -513,6 +512,10 @@ void Carro::draw3d(char type, float alpha)
                     glColor3fv(GUN_COLOR);
                     drawCylinder(gunRadius, gunLength);
                 }
+                glPopMatrix();
+
+                glColor3fv(YELLOW_COLOR);
+                drawSphere(30);
 
             glPopMatrix();
 
@@ -752,61 +755,55 @@ float* Carro::randomMove(double timeDif, int id)
 
 float* Carro::getGunTip()
 {
-    float carHeight = 300;
-    float gunHeight = 90;
+    //Car parameters
+    float carHeight = 100;
     float carWidth = 140;
-    float wheelShaftWidth = 70;
-    float wheelLength = 125;
-    float scale_factor = (this->getRadius()*2) / (carWidth + 2*wheelShaftWidth + 2*wheelLength);
+    float gunLength = 50;
+    float gunRadius = 3;
+    float scale_factor = (this->getRadius()*2) / (carWidth + 300);
+    float gunHeight = 15*scale_factor;
 
-    carHeight *= scale_factor;
-    gunHeight *= scale_factor;
+    carHeight *= scale_factor*3/2;
+    gunLength *= scale_factor;
+    gunHeight += carHeight;
 
     float shootRotation = getCarRotation() + getGunRotation();
     //Add radius to adjust shot to appear upper the gun
-    float xc = getXc() + (carHeight/2 * cos(this->getCarRotation() * M_PI / 180.0) + (gunHeight) * cos(shootRotation * M_PI / 180.0));
-    float yc = getYc() + (carHeight/2 * sin(this->getCarRotation() * M_PI / 180.0) + (gunHeight) * sin(shootRotation * M_PI / 180.0));
+    float xc = getXc() + ((gunLength + gunRadius) * cos(shootRotation * M_PI / 180.0));
+    float yc = getYc() + ((gunLength + gunRadius) * sin(shootRotation * M_PI / 180.0));
+    float zc = gunHeight + ((gunLength + gunRadius) * sin(this->getGunRotationZ() * M_PI / 180.0));
 
     float* gunTip = (float*)malloc(3*sizeof(float));
-    gunTip[0] = xc;
-    gunTip[1] = yc;
-    gunTip[2] = 0;
+
+    gunTip[X_AXIS] = xc;
+    gunTip[Y_AXIS] = yc;
+    gunTip[Z_AXIS] = zc;
 
     return gunTip;
 }
 
 Tiro Carro::shoot()
 {
-    float carHeight = 300;
-    float gunHeight = 90;
-    float carWidth = 140;
-    float wheelShaftWidth = 70;
-    float wheelLength = 125;
-    float scale_factor = (this->getRadius()*2) / (carWidth + 2*wheelShaftWidth + 2*wheelLength);
-
-    carHeight *= scale_factor;
-    gunHeight *= scale_factor;
-
-    float shootRotation = getCarRotation() + getGunRotation();
-
-
     Tiro shot;
 
-    //Add radius to adjust shot to appear upper the gun
-    float xc = getXc() + (carHeight/2 * cos(this->getCarRotation() * M_PI / 180.0) + (gunHeight + shot.getRadius()) * cos(shootRotation * M_PI / 180.0));
-    float yc = getYc() + (carHeight/2 * sin(this->getCarRotation() * M_PI / 180.0) + (gunHeight + shot.getRadius()) * sin(shootRotation * M_PI / 180.0));
+    float *position = getGunTip();
 
 //    cout <<  "p " << cos(this->getCarRotation() << " " << getYc() << endl;
-
 //    cout << "p " << getXc() << " " << getYc() << endl;
 //    cout << "t " << xc << " " << yc<< endl;
-    shot.setXc(xc);
-    shot.setYc(yc);
+
+    shot.setXc(position[X_AXIS]);
+    shot.setYc(position[Y_AXIS]);
+    shot.setZc(position[Z_AXIS]);
     shot.setId(this->getId());
     shot.setShootSpeed(this->getShotSpeed());
+    shot.setRadius(3);
     shot.setShootRotation(getCarRotation()+getGunRotation());
     shot.setShootDirection(X_AXIS, this->getGunDirection()[X_AXIS]);
     shot.setShootDirection(Y_AXIS, this->getGunDirection()[Y_AXIS]);
+    shot.setShootDirection(Z_AXIS, this->getGunDirection()[Z_AXIS]);
+
+    delete(position);
 
     return shot;
 }
