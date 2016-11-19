@@ -13,9 +13,10 @@ int _w, _h;
 
 //camera
 double camXYAngle=0;
-double camXZAngle=0;
+double camXZAngle=30;
 int buttonDown=0;
 float lastX, lastY;
+int night_mode = 0;
 
 void readXMLFile(const char *path)
 {
@@ -406,10 +407,51 @@ void drawEllipse(float xc, float yc, float width, float height, const float colo
 void drawWheel(float radius, float width)
 {
     glPushMatrix();
-    glRotatef(90, 1.0, 0.0, 0.0);
-    glRotatef(-90, 0.0, 1.0, 0.0);
-    drawCircle(0, 0, radius);
-    drawCylinder(radius, width);
+        glRotatef(90, 1.0, 0.0, 0.0);
+        glRotatef(-90, 0.0, 1.0, 0.0);
+        //drawCircle(0, 0, radius);
+        drawCylinder(radius, width);
+    glPopMatrix();
+}
+
+void drawArenaOutside(float alpha)
+{
+
+    arena[0].draw(alpha);
+    GLUquadric *obj = gluNewQuadric();
+    gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
+    glColor4f(0, 0, 0, 0.5);
+    glPushMatrix();
+    glTranslatef(arena[0].getXc(), arena[0].getYc(),0);
+
+    gluQuadricOrientation(obj, GLU_OUTSIDE);
+
+    gluQuadricNormals(obj, GL_SMOOTH);
+    // gluQuadricTexture(obj, textureSun);
+    gluCylinder(obj, arena[0].getRadius(), arena[0].getRadius(), 100, 100, 5);
+    gluDeleteQuadric(obj);
+    glPopMatrix();
+}
+
+void drawArenaInside(float alpha)
+{
+    glPushMatrix();
+        glTranslatef(0, 0, 0.1);
+        arena[1].draw(alpha);
+    glPopMatrix();   
+        
+    GLUquadric *obj = gluNewQuadric();
+    gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
+    glColor4f(0, 0, 0, 0.5);
+    glPushMatrix();
+    glTranslatef(arena[1].getXc(), arena[1].getYc(),0);
+
+    gluQuadricOrientation(obj, GLU_INSIDE);
+
+    gluQuadricNormals(obj, GL_SMOOTH);
+    // gluQuadricTexture(obj, textureSun);
+    gluCylinder(obj, arena[1].getRadius(), arena[1].getRadius(), 100, 100, 5);
+    gluDeleteQuadric(obj);
     glPopMatrix();
 }
 
@@ -426,6 +468,12 @@ void init(void)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    glShadeModel(GL_FLAT);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_COLOR_MATERIAL);
+
     configObservator();
 }
 
@@ -441,6 +489,7 @@ void display(void)
     drawHub();
 
     configGame();
+    DefineIluminacao();
     drawAll(1.0);
 
     configRetrovisor();
@@ -468,29 +517,15 @@ void drawAll(float alpha)
     if(!WIN_FLAG && !LOSE_FLAG)
     {
 
-        for (int i = 0; i < 2; i++)
-        {
-            arena[i].draw(alpha);
+        drawArenaOutside(alpha);
 
-            GLUquadric *obj = gluNewQuadric();
-            gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
-            glColor4f(0, 0, 0, 0.5);
-            glPushMatrix();
-            glTranslatef(arena[i].getXc(), arena[i].getYc(),0);
+        drawArenaInside(alpha);
 
-            if(i)
-                gluQuadricOrientation(obj, GLU_INSIDE);
-            else
-                gluQuadricOrientation(obj, GLU_OUTSIDE);
-
-            gluQuadricNormals(obj, GL_SMOOTH);
-            // gluQuadricTexture(obj, textureSun);
-            gluCylinder(obj, arena[i].getRadius(), arena[i].getRadius(), 100, 100, 5);
-            gluDeleteQuadric(obj);
-            glPopMatrix();
-        }
-
-        rect.draw(alpha);
+        glPushMatrix();
+        glTranslatef(0, 0, 0.1);
+            rect.draw(alpha);
+        glPopMatrix();  
+        
 
         for (list<Carro>::iterator it = enemies.begin(); it != enemies.end(); it++)
             (*it).draw('e', alpha);
@@ -789,6 +824,12 @@ void keypress (unsigned char key, int x, int y)
         key_status['a'] = 1;
         break;
 
+      
+      case 'n':
+      case 'N':
+        night_mode = !night_mode;
+        break;  
+
        case 'e':
          exit(0);
 
@@ -987,31 +1028,80 @@ void printMessage(int x, int y, const char* message)
 
 void DefineIluminacao (void)
 {
-    GLfloat luzAmbiente[4]={0.2,0.2,0.2,1.0};
-    GLfloat luzDifusa[4]={0.7,0.7,0.7,1.0};    // "cor"
-    GLfloat luzEspecular[4]={1.0, 1.0, 1.0, 1.0};// "brilho"
-    GLfloat posicaoLuz[4]={0.0, -40.0, 0.0, 1.0};
+
+    GLfloat luzAmbienteNight[4]={0.1,0.1,0.1,1.0};
+    GLfloat luzAmbienteDay[4]={0.5,0.5,0.5,1.0};
+
+    GLfloat luzDifusa[4]={0.2,0.2,0.2,1.0};    // "cor"
+    GLfloat luzEspecular[4]={0.8, 0.8, 0.8, 1.0}; //"brilho"
+    GLfloat posicaoLuz[4]={0.0, 0, 20.0, 0.0};
 
     // Capacidade de brilho do material
-    GLfloat especularidade[4]={1.0,1.0,1.0,1.0};
-    GLint especMaterial = 60;
+    //GLfloat especularidade[4]={0.2,0.2,0.2,1.0};
+    //GLint especMaterial = 5;
 
     // Define a refletância do material
-    glMaterialfv(GL_FRONT,GL_SPECULAR, especularidade);
+    //glMaterialfv(GL_FRONT,GL_SPECULAR, especularidade);
     // Define a concentração do brilho
-    glMateriali(GL_FRONT,GL_SHININESS,especMaterial);
+    //glMateriali(GL_FRONT,GL_SHININESS,especMaterial);
+
+    if(!night_mode)
+    {
+
+        /*float DISTANCE_FORWARD = 60;
+
+        float dx = DISTANCE_FORWARD*cos(player.getCarRotation() * M_PI/180.0);
+        float dy = DISTANCE_FORWARD*sin(player.getCarRotation() * M_PI/180.0);
+
+        glEnable(GL_LIGHT1);
+
+        GLfloat light1_ambient[] = { 0.0, 0.0, 0.0, 1.0 };
+        GLfloat light1_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+        GLfloat light1_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+        GLfloat light1_position[] = { player.getXc(), player.getYc(), 20, 1.0 };
+        GLfloat spot_direction[] = { player.getXc() + dx, player.getYc()+dy, 0.0 };
+
+        glLightfv(GL_LIGHT1, GL_AMBIENT, light1_ambient);
+        glLightfv(GL_LIGHT1, GL_DIFFUSE, light1_diffuse);
+        glLightfv(GL_LIGHT1, GL_SPECULAR, light1_specular);
+        glLightfv(GL_LIGHT1, GL_POSITION, light1_position);*/
+
+        //glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 1.5);
+        //glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.5);
+        //glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.2);
+
+        //glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 45.0);
+        //glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spot_direction);
+        //glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 2.0);
+
+       
+
+    }
+    else
+    {
+        glDisable(GL_LIGHT1);
+    }
 
     // Ativa o uso da luz ambiente
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente);
+    if(night_mode)
+    {
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbienteDay);
+        glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbienteDay);
+    }
+    else
+    {
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbienteNight);
+        glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbienteNight);
+    }
 
     // Define os parâmetros da luz de número 0
-    glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa );
-    glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular );
-    glLightfv(GL_LIGHT0, GL_POSITION, posicaoLuz );
+    //glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular);
+    glLightfv(GL_LIGHT0, GL_POSITION, posicaoLuz);
 
     // Habilita o modelo de colorização de Gouraud
-    glShadeModel(GL_SMOOTH);
+    //glShadeModel(GL_SMOOTH);
 }
 
 void configObservator(void)
@@ -1022,12 +1112,10 @@ void configObservator(void)
     // Inicializa sistema de coordenadas do modelo
     glLoadIdentity();
 
-    DefineIluminacao();
-
     if(camera.getType() == CAMERA_01)
     {
 
-        float DISTANCE_BACKWARD = 60;
+        float DISTANCE_BACKWARD = 100;
 
 
         float dx = DISTANCE_BACKWARD*cos( ( player.getCarRotation() + camXYAngle ) * M_PI/180.0);
@@ -1068,8 +1156,8 @@ void configObservator(void)
         float dx = DISTANCE_FORWARD*cos(player.getCarRotation() * M_PI/180.0);
         float dy = DISTANCE_FORWARD*sin(player.getCarRotation() * M_PI/180.0);
 
-        camera.setSrcX(player.getXc() - dx*0.3);
-        camera.setSrcY(player.getYc() - dy*0.3);
+        camera.setSrcX(player.getXc() + dx*0.3);
+        camera.setSrcY(player.getYc() + dy*0.3);
         camera.setSrcZ(20); //altura
 
         camera.setDstX(player.getXc()+dx);
@@ -1090,9 +1178,9 @@ void configObservator(void)
         float dx = DISTANCE_FORWARD*cos( (player.getCarRotation() + player.getGunRotation()) * M_PI/180.0);
         float dy = DISTANCE_FORWARD*sin( (player.getCarRotation() + player.getGunRotation()) * M_PI/180.0);
 
-        camera.setSrcX(gunTip[0]-dx*0.3);
-        camera.setSrcY(gunTip[1]-dy*0.3);
-        camera.setSrcZ(10);
+        camera.setSrcX(gunTip[0]);
+        camera.setSrcY(gunTip[1]);
+        camera.setSrcZ(gunTip[2]);
 
         camera.setDstX(player.getXc()+dx);
         camera.setDstY(player.getYc()+dy);
@@ -1137,7 +1225,7 @@ void configRetrovisor()
     // Inicializa sistema de coordenadas de projeção
     glLoadIdentity();
 
-    gluPerspective(camera.getAngle(),camera.getAspect(),5,1000);
+    gluPerspective(camera.getAngle(),camera.getAspect(),50,1000);
 
     // Especifica sistema de coordenadas do modelo
     glMatrixMode(GL_MODELVIEW);

@@ -31,7 +31,7 @@ int main(int argc, char** argv)
     readXMLFile(argv[1]);
     srand(time(NULL));
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(MainWindow.getWidth(),MainWindow.getHeight()+200);
     glutInitWindowPosition(500,500);
     glutCreateWindow(MainWindow.getTitle().c_str());

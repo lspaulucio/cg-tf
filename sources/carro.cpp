@@ -470,6 +470,7 @@ void Carro::draw3d(char type, float alpha)
         glTranslatef(this->getXc(), this->getYc(), scale_factor*carHeight/2);
         glRotated(ROTATION_CORRECTION + this->getCarRotation(), 0.0, 0.0, 1.0);
         glScalef(scale_factor, scale_factor, scale_factor);
+        glTranslatef(0, 0, carHeight/2 - wheelRadius/2);
             //drawing body car
             if(type == 'e')
             {
@@ -762,6 +763,7 @@ float* Carro::getGunTip()
     float gunRadius = 3;
     float scale_factor = (this->getRadius()*2) / (carWidth + 300);
     float gunHeight = 15*scale_factor;
+    float wheelRadius = 50;
 
     carHeight *= scale_factor*3/2;
     gunLength *= scale_factor;

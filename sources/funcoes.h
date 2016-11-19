@@ -55,5 +55,8 @@ void drawHub(void);
 void configHub();
 void configMiniMapa(void);
 void motionMouse(int x, int y);
+void DefineIluminacao();
+void drawArenaOutside(float alpha=1);
+void drawArenaInside(float alpha=1);
 
 #endif //FUNCOES_H
