@@ -451,8 +451,8 @@ void Carro::draw3d(char type, float alpha)
     float carHeight = 100;
     //float ellipseBigAxis = 80;
     //float ellipseSmallAxis = 40;
-    float gunLength = 50;
-    float gunRadius = 5;
+    float gunLength = 80;
+    float gunRadius = 8;
     float wheelRadius = 50;
     float wheelWidth = 30;
     float wheelAxisDistance = 45;
@@ -761,7 +761,7 @@ float* Carro::getGunTip()
     //Car parameters
     float carHeight = 100;
     float carWidth = 140;
-    float gunLength = 50;
+    float gunLength = 80;
     float gunRadius = 3;
     float scale_factor = (this->getRadius()*2) / (carWidth + 300);
     float gunHeight = 15*scale_factor;
