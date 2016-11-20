@@ -696,7 +696,7 @@ void idle(void)
         //Player shots
         for (list<Tiro>::iterator it = playerShots.begin(); it != playerShots.end(); it++)
         {
-//            (*it).move(timeDiference);
+            (*it).move(timeDiference);
 
 
             if (!(*it).isInWindow(0.0, 0.0, 2 * arena[0].getRadius(), 2 * arena[0].getRadius()))
