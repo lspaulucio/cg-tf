@@ -409,8 +409,10 @@ void drawWheel(float radius, float width)
     glPushMatrix();
         glRotatef(90, 1.0, 0.0, 0.0);
         glRotatef(-90, 0.0, 1.0, 0.0);
-        //drawCircle(0, 0, radius);
+        drawCircle(0, 0, radius);
         drawCylinder(radius, width);
+        glTranslatef(0.0,0.0,width);
+            drawCircle(0, 0, radius);
     glPopMatrix();
 }
 
@@ -694,7 +696,7 @@ void idle(void)
         //Player shots
         for (list<Tiro>::iterator it = playerShots.begin(); it != playerShots.end(); it++)
         {
-            (*it).move(timeDiference);
+//            (*it).move(timeDiference);
 
 
             if (!(*it).isInWindow(0.0, 0.0, 2 * arena[0].getRadius(), 2 * arena[0].getRadius()))

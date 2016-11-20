@@ -467,10 +467,9 @@ void Carro::draw3d(char type, float alpha)
 
     glPushMatrix();
         //car body
-        glTranslatef(this->getXc(), this->getYc(), scale_factor*carHeight/2);
+        glTranslatef(this->getXc(), this->getYc(), scale_factor*(carHeight - wheelRadius/2));
         glRotated(ROTATION_CORRECTION + this->getCarRotation(), 0.0, 0.0, 1.0);
         glScalef(scale_factor, scale_factor, scale_factor);
-        glTranslatef(0, 0, carHeight/2 - wheelRadius/2);
             //drawing body car
             if(type == 'e')
             {
@@ -528,6 +527,7 @@ void Carro::draw3d(char type, float alpha)
             //drawing wheel upper left
                 glTranslatef(-carWidth/2, -wheelAxisDistance, -wheelRadius/2);
                     glRotatef(this->getWheelRotation(), 0, 0, 1);
+                        glColor3fv(GREY_COLOR);
                         drawWheel(wheelRadius, wheelWidth);
 
 
@@ -552,6 +552,7 @@ void Carro::draw3d(char type, float alpha)
                 //drawing wheel upper right
                 glTranslatef(carWidth/2 + 30, -wheelAxisDistance, -wheelRadius/2);
                     glRotated(this->getWheelRotation(), 0.0, 0.0, 1);
+                        glColor3fv(GREY_COLOR);
                         drawWheel(wheelRadius, wheelWidth);
 
                     // //Wheel move effect
@@ -579,6 +580,7 @@ void Carro::draw3d(char type, float alpha)
             glPushMatrix();
                 glPushMatrix();
                     glRotatef(90, 1.0,0,0);
+                        glColor3fv(GREY_COLOR);
                         drawCylinder(exhaustWidth, exhaustHeight);
                 glPopMatrix();
 
@@ -592,8 +594,6 @@ void Carro::draw3d(char type, float alpha)
                         glPushMatrix();
                             glRotatef(90, 1, 0, 0);
 
-                            glColor3fv(YELLOW_COLOR);
-                                drawCone(exhaustWidth, exhaustFireHeight/2);
                             glColor3fv(RED_COLOR);
                                 drawCone(exhaustWidth/2, exhaustFireHeight/4);
                         glPopMatrix();
@@ -615,6 +615,7 @@ void Carro::draw3d(char type, float alpha)
             glPushMatrix();
                 //drawing wheel bottom left
                 glTranslatef(-carWidth/2, wheelAxisDistance, -wheelRadius/2);
+                    glColor3fv(GREY_COLOR);
                     drawWheel(wheelRadius, wheelWidth);
                     // //Wheel move effect
                     // if(isMoving())
@@ -635,6 +636,7 @@ void Carro::draw3d(char type, float alpha)
             glPushMatrix();
                 //drawing wheel bottom right
                 glTranslatef(carWidth/2 + 30, wheelAxisDistance, -wheelRadius/2);
+                    glColor3fv(GREY_COLOR);
                     drawWheel(wheelRadius, wheelWidth);
                     //Wheel move effect
                     // if(isMoving())
@@ -763,18 +765,19 @@ float* Carro::getGunTip()
     float gunRadius = 3;
     float scale_factor = (this->getRadius()*2) / (carWidth + 300);
     float gunHeight = 15*scale_factor;
-    float wheelRadius = 50;
+    float wheelRadius = 50*scale_factor;
 
-    carHeight *= scale_factor*3/2;
+    carHeight *= scale_factor;
     gunLength *= scale_factor;
-    gunHeight += carHeight;
+    gunHeight += 2*carHeight;
+    gunHeight -= wheelRadius/2;
 
     float shootRotation = getCarRotation() + getGunRotation();
     //Add radius to adjust shot to appear upper the gun
-    float xc = getXc() + ((gunLength + gunRadius) * cos(shootRotation * M_PI / 180.0));
-    float yc = getYc() + ((gunLength + gunRadius) * sin(shootRotation * M_PI / 180.0));
+    float xc = getXc() + ((gunLength + gunRadius) * (cos(shootRotation * M_PI / 180.0)) * cos(this->getGunRotationZ() * M_PI / 180.0));
+    float yc = getYc() + ((gunLength + gunRadius) * (sin(shootRotation * M_PI / 180.0)) * cos(this->getGunRotationZ() * M_PI / 180.0));
     float zc = gunHeight + ((gunLength + gunRadius) * sin(this->getGunRotationZ() * M_PI / 180.0));
-
+    cout << zc << endl;
     float* gunTip = (float*)malloc(3*sizeof(float));
 
     gunTip[X_AXIS] = xc;
