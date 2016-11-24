@@ -331,7 +331,8 @@ void drawCone(float radius, float height)
     GLUquadric *obj = gluNewQuadric();
     gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
     gluQuadricNormals(obj, GL_SMOOTH);//GL_FLAT / GL_SMOOTH
-    gluCylinder(obj, radius, 0, height, 100, 100);
+    gluCylinder(obj, radius, 0, height, 30, 50);
+
     gluDeleteQuadric(obj);
 }
 
@@ -340,10 +341,10 @@ void drawCylinder(float radius, float height)
     GLUquadric *obj = gluNewQuadric();
     gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
     gluQuadricNormals(obj, GL_SMOOTH);//GL_FLAT / GL_SMOOTH
-    gluCylinder(obj, radius, radius, height, 100, 100);
+    gluCylinder(obj, radius, radius, height, 30, 50);
     glPushMatrix();
         glTranslatef(0, 0, 30);
-        gluDisk(obj, 0, radius, 100, 100);
+        gluDisk(obj, 0, radius, 30, 50);
     glPopMatrix();
     gluDeleteQuadric(obj);
 }
@@ -353,7 +354,7 @@ void drawSphere(float radius)
     GLUquadric *obj = gluNewQuadric();
     gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
     gluQuadricNormals(obj, GL_SMOOTH);//GL_FLAT / GL_SMOOTH
-    gluSphere(obj, radius, 100, 100);
+    gluSphere(obj, radius, 30, 50);
     gluDeleteQuadric(obj);
 }
 

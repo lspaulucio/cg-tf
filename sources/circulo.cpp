@@ -3,7 +3,7 @@
 Circulo::Circulo()
 {
     radius = 0;
-    drawResolution = 100;
+    drawResolution = 50;
 }
 
 Circulo::Circulo(const Circulo &circle): Forma(circle)
