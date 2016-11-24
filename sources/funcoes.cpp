@@ -341,6 +341,10 @@ void drawCylinder(float radius, float height)
     gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
     gluQuadricNormals(obj, GL_SMOOTH);//GL_FLAT / GL_SMOOTH
     gluCylinder(obj, radius, radius, height, 100, 100);
+    glPushMatrix();
+        glTranslatef(0, 0, 30);
+        gluDisk(obj, 0, radius, 100, 100);
+    glPopMatrix();
     gluDeleteQuadric(obj);
 }
 
@@ -440,8 +444,8 @@ void drawArenaInside(float alpha)
     glPushMatrix();
         glTranslatef(0, 0, 0.1);
         arena[1].draw(alpha);
-    glPopMatrix();   
-        
+    glPopMatrix();
+
     GLUquadric *obj = gluNewQuadric();
     gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
     glColor4f(0, 0, 0, 0.5);
@@ -526,8 +530,8 @@ void drawAll(float alpha)
         glPushMatrix();
         glTranslatef(0, 0, 0.1);
             rect.draw(alpha);
-        glPopMatrix();  
-        
+        glPopMatrix();
+
 
         for (list<Carro>::iterator it = enemies.begin(); it != enemies.end(); it++)
             (*it).draw('e', alpha);
@@ -826,11 +830,11 @@ void keypress (unsigned char key, int x, int y)
         key_status['a'] = 1;
         break;
 
-      
+
       case 'n':
       case 'N':
         night_mode = !night_mode;
-        break;  
+        break;
 
        case 'e':
          exit(0);
@@ -1076,7 +1080,7 @@ void DefineIluminacao (void)
         //glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spot_direction);
         //glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 2.0);
 
-       
+
 
     }
     else

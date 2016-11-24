@@ -491,6 +491,14 @@ void Carro::draw3d(char type, float alpha)
             }
         //drawCircle(0.0, 0.0, this->getRadius()/scale_factor);
 
+        glPushMatrix(); //Drawing car's headlight
+            glTranslatef(-carWidth/3, carLength/2, 15);
+            // glRotatef(90, 1.0, 0.0, 0.0);
+            drawCube(1, 20, 20, YELLOW_COLOR, 0.0);
+            glTranslatef(carWidth*2/3, 0, 0);
+            drawCube(1, 20, 20, YELLOW_COLOR, 0.0);
+        glPopMatrix();
+
         glPushMatrix(); //Here I'm in body's center
             //move to gun position (body upper)
 
@@ -777,7 +785,7 @@ float* Carro::getGunTip()
     float xc = getXc() + ((gunLength + gunRadius) * (cos(shootRotation * M_PI / 180.0)) * cos(this->getGunRotationZ() * M_PI / 180.0));
     float yc = getYc() + ((gunLength + gunRadius) * (sin(shootRotation * M_PI / 180.0)) * cos(this->getGunRotationZ() * M_PI / 180.0));
     float zc = gunHeight + ((gunLength + gunRadius) * sin(this->getGunRotationZ() * M_PI / 180.0));
-    cout << zc << endl;
+    // cout << zc << endl;
     float* gunTip = (float*)malloc(3*sizeof(float));
 
     gunTip[X_AXIS] = xc;
