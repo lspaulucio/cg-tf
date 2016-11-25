@@ -421,45 +421,64 @@ void drawWheel(float radius, float width)
     glPopMatrix();
 }
 
+GLuint textureOutsideArena;
+GLuint textureInsideArena;
+
 void drawArenaOutside(float alpha)
 {
 
     arena[0].draw(alpha);
+
     GLUquadric *obj = gluNewQuadric();
-    gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
-    glColor4f(0, 0, 0, 0.5);
-    glPushMatrix();
-    glTranslatef(arena[0].getXc(), arena[0].getYc(),0);
 
-    gluQuadricOrientation(obj, GLU_OUTSIDE);
-
+    //Texture
+    gluQuadricTexture(obj, GLU_TRUE);
+    gluQuadricOrientation(obj, GLU_INSIDE);
     gluQuadricNormals(obj, GL_SMOOTH);
-    // gluQuadricTexture(obj, textureSun);
-    gluCylinder(obj, arena[0].getRadius(), arena[0].getRadius(), 100, 100, 5);
-    gluDeleteQuadric(obj);
+    // glEnable(GL_TEXTURE_GEN_S);
+    // glEnable(GL_TEXTURE_GEN_T);
+    glBindTexture (GL_TEXTURE_2D, textureOutsideArena);
+
+    //Draw options
+    gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
+    glColor3f(1.0, 1.0, 1.0);
+
+    glPushMatrix();
+        glTranslatef(arena[0].getXc(), arena[0].getYc(), 0);
+            gluCylinder(obj, arena[0].getRadius(), arena[0].getRadius(), 100, 100, 5);
+            gluDeleteQuadric(obj);
     glPopMatrix();
+
+    // glDisable(GL_TEXTURE_GEN_S);
+    // glDisable(GL_TEXTURE_GEN_T);
 }
 
 void drawArenaInside(float alpha)
 {
-    glPushMatrix();
-        glTranslatef(0, 0, 0.1);
-        arena[1].draw(alpha);
-    glPopMatrix();
+    arena[1].draw(alpha);
 
     GLUquadric *obj = gluNewQuadric();
-    gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
-    glColor4f(0, 0, 0, 0.5);
-    glPushMatrix();
-    glTranslatef(arena[1].getXc(), arena[1].getYc(),0);
 
-    gluQuadricOrientation(obj, GLU_INSIDE);
-
+    //Texture
+    gluQuadricTexture(obj, GLU_TRUE);
+    gluQuadricOrientation(obj, GLU_OUTSIDE);
     gluQuadricNormals(obj, GL_SMOOTH);
-    // gluQuadricTexture(obj, textureSun);
-    gluCylinder(obj, arena[1].getRadius(), arena[1].getRadius(), 100, 100, 5);
-    gluDeleteQuadric(obj);
+    // glEnable(GL_TEXTURE_GEN_S);
+    // glEnable(GL_TEXTURE_GEN_T);
+    glBindTexture (GL_TEXTURE_2D, textureInsideArena);
+
+    //Draw options
+    gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
+    glColor3f(1.0, 1.0, 1.0);
+
+    glPushMatrix();
+        glTranslatef(arena[1].getXc(), arena[1].getYc(),0);
+            gluCylinder(obj, arena[1].getRadius(), arena[1].getRadius(), 100, 100, 50);
+            gluDeleteQuadric(obj);
     glPopMatrix();
+
+    // glDisable(GL_TEXTURE_GEN_S);
+    // glDisable(GL_TEXTURE_GEN_T);
 }
 
 void init(void)
@@ -475,12 +494,13 @@ void init(void)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    textureOutsideArena = LoadTextureRAW("../textures/parede2.png");
     glShadeModel(GL_FLAT);
     glEnable(GL_LIGHTING);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHT0);
     glEnable(GL_COLOR_MATERIAL);
-
+    glEnable(GL_TEXTURE_2D);
     configObservator();
 }
 
@@ -1082,7 +1102,6 @@ void DefineIluminacao (void)
         //glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 2.0);
 
 
-
     }
     else
     {
@@ -1294,4 +1313,34 @@ void reshape(GLsizei w, GLsizei h)
     _w = w;
     _h = h;
 
+}
+
+///////////////////////////////////// Texture Loader ///////////////////////////////
+GLuint LoadTextureRAW(const char* filename)
+{
+    GLuint texture;
+
+    unsigned error;
+    unsigned char* image;
+    unsigned width, height;
+
+    error = lodepng_decode32_file(&image, &width, &height, filename);
+
+    if(error) printf("error %u: %s\n", error, lodepng_error_text(error));
+
+    glGenTextures( 1, &texture );
+    glBindTexture( GL_TEXTURE_2D, texture );
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,GL_MODULATE );
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR );
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR );
+    glTexImage2D(GL_TEXTURE_2D,                //Always GL_TEXTURE_2D
+                             0,                //0 for now
+                             GL_RGBA,          //Format OpenGL uses for image
+                             width, height,    //Width and height
+                             0,                //The border of the image
+                             GL_RGBA,          //GL_RGB, because pixels are stored in RGB format
+                             GL_UNSIGNED_BYTE, //GL_UNSIGNED_BYTE, because pixels are stored as unsigned numbers
+                             image);           //The actual pixel data
+
+    return texture;
 }

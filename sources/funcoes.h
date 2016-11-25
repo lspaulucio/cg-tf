@@ -10,6 +10,7 @@
 #include <math.h>
 #include "types.h"
 #include "../tinyxml2/tinyxml2.h"
+#include "../imageLoader/lodepng.h"
 #include "forma.h"
 #include "janela.h"
 #include "circulo.h"
@@ -58,5 +59,6 @@ void motionMouse(int x, int y);
 void DefineIluminacao();
 void drawArenaOutside(float alpha=1);
 void drawArenaInside(float alpha=1);
+GLuint LoadTextureRAW(const char* filename);
 
 #endif //FUNCOES_H

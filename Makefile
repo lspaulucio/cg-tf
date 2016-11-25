@@ -15,12 +15,13 @@ MATH_LIB=-lm
 
 #Sources variables
 TINYXML2_SOURCE= $(wildcard tinyxml2/*.cpp)
+IMAGELOADER_SOURCE= $(wildcard imageLoader/*.cpp)
 SOURCES= $(wildcard sources/*.cpp)
 
 #Executable name
 EXECUTABLE_NAME=trabalhocg
 
-all: $(TINYXML2_SOURCE:.cpp=.o) $(SOURCES:.cpp=.o)
+all: $(TINYXML2_SOURCE:.cpp=.o) $(SOURCES:.cpp=.o) $(IMAGELOADER_SOURCE:.cpp=.o)
 	@echo Compiling program
 	@$(CC) main.cpp $^ $(FLAGS) $(OPENGL_LIB) $(MATH_LIB) -o $(EXECUTABLE_NAME)
 	@echo Done
@@ -39,5 +40,5 @@ rebuild: clean all
 
 clean:
 	@echo Cleaning object files
-	@rm -f *~ $(SOURCES:.cpp=.o) $(TINYXML2_SOURCE:.cpp=.o) $(EXECUTABLE_NAME)
+	@rm -f *~ $(SOURCES:.cpp=.o) $(TINYXML2_SOURCE:.cpp=.o) $(IMAGELOADER_SOURCE:.cpp=.o) $(EXECUTABLE_NAME)
 	@echo Done
