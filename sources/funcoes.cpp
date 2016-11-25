@@ -432,12 +432,12 @@ void drawArenaOutside(float alpha)
     GLUquadric *obj = gluNewQuadric();
 
     //Texture
+    gluQuadricTexture(obj, GLU_TRUE);
+    gluQuadricOrientation(obj, GLU_INSIDE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
-    gluQuadricTexture(obj, GLU_TRUE);
     glBindTexture(GL_TEXTURE_2D, textureOutsideArena);
-    gluQuadricOrientation(obj, GLU_INSIDE);
     gluQuadricNormals(obj, GL_SMOOTH);
     // glEnable(GL_TEXTURE_GEN_S);
     // glEnable(GL_TEXTURE_GEN_T);
@@ -466,10 +466,13 @@ void drawArenaInside(float alpha)
     //Texture
     gluQuadricTexture(obj, GLU_TRUE);
     gluQuadricOrientation(obj, GLU_OUTSIDE);
+    glBindTexture (GL_TEXTURE_2D, textureInsideArena);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
     gluQuadricNormals(obj, GL_SMOOTH);
     // glEnable(GL_TEXTURE_GEN_S);
     // glEnable(GL_TEXTURE_GEN_T);
-    glBindTexture (GL_TEXTURE_2D, textureInsideArena);
 
     //Draw options
     gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
@@ -499,6 +502,8 @@ void init(void)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     textureOutsideArena = LoadTextureRAW("textures/parede2.png");
+    textureInsideArena = LoadTextureRAW("textures/parede.png");
+
     glShadeModel(GL_FLAT);
     glEnable(GL_LIGHTING);
     glEnable(GL_DEPTH_TEST);
