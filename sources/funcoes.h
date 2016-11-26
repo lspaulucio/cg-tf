@@ -53,7 +53,7 @@ void reshape(GLsizei w, GLsizei h);
 void specialFunc(int key, int x, int y);
 void drawAll(float alpha = 1);
 void drawHub(void);
-void configHub();
+void configHud();
 void configMiniMapa(void);
 void motionMouse(int x, int y);
 void DefineIluminacao();

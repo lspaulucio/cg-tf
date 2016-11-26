@@ -521,7 +521,7 @@ void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    configHub();
+    configHud();
     drawHub();
 
     configGame();
@@ -1182,7 +1182,6 @@ void configObservator(void)
         gluLookAt( camera.getSrcX(), camera.getSrcY(), camera.getSrcZ(),
                    camera.getDstX(), camera.getDstY(), camera.getDstZ(),
                    0 , 0, z );
-
     }
     else if(camera.getType() == CAMERA_02)
     {
@@ -1193,11 +1192,11 @@ void configObservator(void)
 
         camera.setSrcX(player.getXc() + dx*0.3);
         camera.setSrcY(player.getYc() + dy*0.3);
-        camera.setSrcZ(20); //altura
+        camera.setSrcZ(50); //altura
 
         camera.setDstX(player.getXc()+dx);
         camera.setDstY(player.getYc()+dy);
-        camera.setDstZ(0);
+        camera.setDstZ(50);
 
         //camera atras do carro
         gluLookAt( camera.getSrcX(), camera.getSrcY(), camera.getSrcZ(),
@@ -1210,16 +1209,24 @@ void configObservator(void)
 
         float* gunTip = player.getGunTip();
 
-        float dx = DISTANCE_FORWARD*cos( (player.getCarRotation() + player.getGunRotation()) * M_PI/180.0);
-        float dy = DISTANCE_FORWARD*sin( (player.getCarRotation() + player.getGunRotation()) * M_PI/180.0);
+        float dx = DISTANCE_FORWARD*cos( player.getGunRotationZ() * M_PI/180.0 );
+        dx *= cos( (player.getGunRotation() + player.getCarRotation()) * M_PI/180.0);
+
+        float dy = DISTANCE_FORWARD*cos( player.getGunRotationZ() * M_PI/180.0 );
+        dy *= sin( (player.getCarRotation() + player.getGunRotation()) * M_PI/180.0);
+
+        float dz = DISTANCE_FORWARD*sin( player.getGunRotationZ() * M_PI/180.0 );
+
+        //getGunRotationZ()
+        //getGunRotation()
 
         camera.setSrcX(gunTip[0]);
         camera.setSrcY(gunTip[1]);
         camera.setSrcZ(gunTip[2]);
 
-        camera.setDstX(player.getXc()+dx);
-        camera.setDstY(player.getYc()+dy);
-        camera.setDstZ(0);
+        camera.setDstX(gunTip[0]+dx);
+        camera.setDstY(gunTip[1]+dy);
+        camera.setDstZ(gunTip[2]+dz);
 
         //camera atras do carro
         gluLookAt( camera.getSrcX(), camera.getSrcY(), camera.getSrcZ(),
@@ -1301,7 +1308,7 @@ void configMiniMapa()
     glOrtho(0, _w, 0, _h, -1.0, 1.0);
 }
 
-void configHub()
+void configHud()
 {
     glLoadIdentity();
     glViewport(0, 0, _w, _h);
