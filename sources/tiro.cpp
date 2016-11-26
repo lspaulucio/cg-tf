@@ -94,12 +94,14 @@ void Tiro::draw(float alpha)
 
 void Tiro::draw3d(float alpha)
 {
-    glColor3fv(RED_COLOR);
+    glColor3fv(WHITE_COLOR);
     glPushMatrix();
         glTranslatef(getXc(), getYc(), getZc());
         GLUquadric *obj = gluNewQuadric();
         gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
         gluQuadricNormals(obj, GL_SMOOTH);//GL_FLAT / GL_SMOOTH
+        gluQuadricTexture(obj, GLU_TRUE);
+        gluQuadricOrientation(obj, GLU_OUTSIDE);
         gluSphere(obj, getRadius(), 100, 100);
         gluDeleteQuadric(obj);
     glPopMatrix();

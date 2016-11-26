@@ -421,18 +421,38 @@ void drawWheel(float radius, float width)
     glPopMatrix();
 }
 
+//Textures
 GLuint textureOutsideArena;
 GLuint textureInsideArena;
+GLuint textureShot;
+GLuint textureFloor;
 
 void drawArenaOutside(float alpha)
 {
-
-    arena[0].draw(alpha);
-
-    GLUquadric *obj = gluNewQuadric();
-
     //Texture
     glMatrixMode(GL_TEXTURE);
+    glPushMatrix();
+    glLoadIdentity();
+    glScalef(20, 20, 1); //20 is a constant that work
+    glMatrixMode(GL_MODELVIEW);
+
+    GLUquadric *obj = gluNewQuadric();
+    glColor3fv(WHITE_COLOR);
+    gluQuadricTexture(obj, GLU_TRUE);
+    gluQuadricOrientation(obj, GLU_OUTSIDE);
+    gluQuadricNormals(obj, GL_SMOOTH);
+    glBindTexture(GL_TEXTURE_2D, textureFloor);
+    glPushMatrix();
+        glTranslatef(arena[0].getXc(),arena[0].getYc(),0);
+        gluDisk(obj, 0, arena[0].getRadius(), 50, 30);
+    glPopMatrix();
+    // arena[0].draw(alpha);
+    gluDeleteQuadric(obj);
+
+    obj = gluNewQuadric();
+
+    glMatrixMode(GL_TEXTURE);
+    glPopMatrix();
     glPushMatrix();
     glLoadIdentity();
     glScalef(20, 1, 1); //20 is a constant that work
@@ -440,15 +460,13 @@ void drawArenaOutside(float alpha)
 
     gluQuadricTexture(obj, GLU_TRUE);
     gluQuadricOrientation(obj, GLU_INSIDE);
+    gluQuadricNormals(obj, GL_SMOOTH);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
     glBindTexture(GL_TEXTURE_2D, textureOutsideArena);
-    gluQuadricNormals(obj, GL_SMOOTH);
     // glEnable(GL_TEXTURE_GEN_S);
     // glEnable(GL_TEXTURE_GEN_T);
-
-
 
     //Draw options
     gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
@@ -474,7 +492,6 @@ void drawArenaInside(float alpha)
     arena[1].draw(alpha);
 
     GLUquadric *obj = gluNewQuadric();
-
     //Texture
     glMatrixMode(GL_TEXTURE);
     glPushMatrix();
@@ -524,6 +541,8 @@ void init(void)
 
     textureOutsideArena = LoadTextureRAW("textures/parede.png");
     textureInsideArena = LoadTextureRAW("textures/parede.png");
+    textureShot = LoadTextureRAW("textures/tiro.png");
+    textureFloor = LoadTextureRAW("textures/solo.png");
 
     glShadeModel(GL_SMOOTH);
     glEnable(GL_LIGHTING);
@@ -600,8 +619,13 @@ void drawAll(float alpha)
 
         player.draw3d('p',alpha);
 
+
         for (list<Tiro>::iterator it = playerShots.begin(); it != playerShots.end(); it++)
+        {
+            glBindTexture(GL_TEXTURE_2D, textureShot);
             (*it).draw3d(alpha);
+        }
+
 
         for (list<Tiro>::iterator it = enemiesShots.begin(); it != enemiesShots.end(); it++)
             (*it).draw3d(alpha);
