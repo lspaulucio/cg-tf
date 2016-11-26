@@ -493,9 +493,9 @@ void init(void)
     /*Selecting background color*/
     //cout << " Janela "<< MainWindow.getBgColors(RED) << MainWindow.getBgColors(GREEN) << MainWindow.getBgColors(BLUE) << endl;
     glClearColor(MainWindow.getBgColors(RED),MainWindow.getBgColors(GREEN),MainWindow.getBgColors(BLUE), 0.0);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0, 2*arena[0].getRadius(), 0.0, 2*arena[0].getRadius(), -1.0, 1.0);
+    //glMatrixMode(GL_PROJECTION);
+    //glLoadIdentity();
+    //glOrtho(0.0, 2*arena[0].getRadius(), 0.0, 2*arena[0].getRadius(), -1.0, 1.0);
 
     //glClearColor( 0.0f, 0.1f, 0.0f, 0.5f );
     glEnable(GL_BLEND);
@@ -504,12 +504,15 @@ void init(void)
     textureOutsideArena = LoadTextureRAW("textures/parede2.png");
     textureInsideArena = LoadTextureRAW("textures/parede.png");
 
-    glShadeModel(GL_FLAT);
+    glShadeModel(GL_SMOOTH);
     glEnable(GL_LIGHTING);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHT0);
-    glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_TEXTURE_2D);
+    glEnable(GL_COLOR_MATERIAL);
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);  // Nice perspective corrections
+    glDepthFunc(GL_LEQUAL);    // Set the type of depth-test
+
     configObservator();
 }
 
@@ -521,30 +524,38 @@ void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    configHud();
-    drawHub();
+    glDisable(GL_LIGHTING);
+        configHud();
+        drawHub();
+    glEnable(GL_LIGHTING);
 
     configGame();
-    DefineIluminacao();
+        DefineIluminacao();
     drawAll(1.0);
 
     configRetrovisor();
+        DefineIluminacao();
     drawAll();
 
-    configMiniMapa();
-    drawAll(0.2);
+    //configMiniMapa();
+    //drawAll(0.2);
 
     glutSwapBuffers();
 }
 
 void drawHub()
 {
+
+    glDisable(GL_TEXTURE_2D);
+
     if(WIN_FLAG)
         printMessage(MainWindow.getWidth()/4, MainWindow.getHeight()/2, "Congratulations!!! You won the game");
     else if(LOSE_FLAG)
         printMessage(MainWindow.getWidth()/4, MainWindow.getHeight()/2, "Game Over!!!   An enemy hit you");
     else
         printClock(MainWindow.getWidth() - MainWindow.getWidth() / 4, MainWindow.getHeight() - 20);
+
+    glEnable(GL_TEXTURE_2D);
 }
 
 void drawAll(float alpha)
@@ -564,7 +575,7 @@ void drawAll(float alpha)
 
 
         for (list<Carro>::iterator it = enemies.begin(); it != enemies.end(); it++)
-            (*it).draw('e', alpha);
+            (*it).draw3d('e', alpha);
 
         player.draw3d('p',alpha);
 
@@ -572,7 +583,7 @@ void drawAll(float alpha)
             (*it).draw3d(alpha);
 
         for (list<Tiro>::iterator it = enemiesShots.begin(); it != enemiesShots.end(); it++)
-            (*it).draw(alpha);
+            (*it).draw3d(alpha);
     }
 }
 
@@ -588,7 +599,7 @@ void idle(void)
 
     //Variables to control car's movements
     float tx, ty;
-    const float WHEEL_ROTATION_STEP = 1;
+    const float WHEEL_ROTATION_STEP = 3;
     float wheelTheta = player.getWheelRotation();
     float move_vector[3] = {0}, *p = NULL;
 
@@ -885,19 +896,19 @@ void specialFunc(int key, int x, int y)
     {
         case GLUT_KEY_F1:
             camera.setType(CAMERA_01);
-            camera.setAngle(50);
+            camera.setAngle(70);
             configGame();
         break;
 
         case GLUT_KEY_F2:
             camera.setType(CAMERA_02);
-            camera.setAngle(50);
+            camera.setAngle(70);
             configGame();
         break;
 
         case GLUT_KEY_F3:
             camera.setType(CAMERA_03);
-            camera.setAngle(50);
+            camera.setAngle(70);
             configGame();
         break;
     }
@@ -1048,6 +1059,7 @@ void checkShotTime(double time) {
 void printMessage(int x, int y, const char* message)
 {
     const char *tmpStr;
+
     glColor3f(0.0,0.0,0.0);
     //Define the position to start printing
     glRasterPos2f(x, y);
@@ -1065,51 +1077,62 @@ void printMessage(int x, int y, const char* message)
 void DefineIluminacao (void)
 {
 
-    GLfloat luzAmbienteNight[4]={0.1,0.1,0.1,1.0};
-    GLfloat luzAmbienteDay[4]={0.5,0.5,0.5,1.0};
+    GLfloat luzAmbienteNight[4]={0.0,0.0,0.0,0.0};
+    GLfloat luzAmbienteDay[4]={0.3,0.3,0.3,1.0};
 
-    GLfloat luzDifusa[4]={0.2,0.2,0.2,1.0};    // "cor"
-    GLfloat luzEspecular[4]={0.8, 0.8, 0.8, 1.0}; //"brilho"
-    GLfloat posicaoLuz[4]={0.0, 0, 20.0, 0.0};
+    GLfloat luzDifusa[4]={0.4,0.4,0.4,1.0};    // "cor"
+    GLfloat luzEspecular[4]={0.1, 0.1, 0.1, 1.0}; //"brilho"
+    GLfloat posicaoLuz[4]={0.0, 0, 100.0, 1.0};
 
     // Capacidade de brilho do material
-    //GLfloat especularidade[4]={0.2,0.2,0.2,1.0};
-    //GLint especMaterial = 5;
+    GLfloat especularidade[4]={0.1,0.1,0.1,1.0};
+    //GLint especMaterial = 100;
 
     // Define a refletância do material
-    //glMaterialfv(GL_FRONT,GL_SPECULAR, especularidade);
+    glMaterialfv(GL_FRONT,GL_SPECULAR, especularidade);
     // Define a concentração do brilho
     //glMateriali(GL_FRONT,GL_SHININESS,especMaterial);
 
-    if(!night_mode)
+    if(night_mode)
     {
 
-        /*float DISTANCE_FORWARD = 60;
+        glPushMatrix();
+        //glTranslatef(player.getXc(), player.getYc(), 50);
 
-        float dx = DISTANCE_FORWARD*cos(player.getCarRotation() * M_PI/180.0);
-        float dy = DISTANCE_FORWARD*sin(player.getCarRotation() * M_PI/180.0);
+            //float DISTANCE_FORWARD = 60;
 
-        glEnable(GL_LIGHT1);
+            float dx = cos(player.getCarRotation() * M_PI/180.0);
+            float dy = sin(player.getCarRotation() * M_PI/180.0);
 
-        GLfloat light1_ambient[] = { 0.0, 0.0, 0.0, 1.0 };
-        GLfloat light1_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
-        GLfloat light1_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-        GLfloat light1_position[] = { player.getXc(), player.getYc(), 20, 1.0 };
-        GLfloat spot_direction[] = { player.getXc() + dx, player.getYc()+dy, 0.0 };
 
-        glLightfv(GL_LIGHT1, GL_AMBIENT, light1_ambient);
-        glLightfv(GL_LIGHT1, GL_DIFFUSE, light1_diffuse);
-        glLightfv(GL_LIGHT1, GL_SPECULAR, light1_specular);
-        glLightfv(GL_LIGHT1, GL_POSITION, light1_position);*/
+            glEnable(GL_LIGHT1);
 
-        //glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 1.5);
-        //glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.5);
-        //glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.2);
+            GLfloat light1_ambient[] = { 0.0, 0.0, 0.0, 1.0 };
+            GLfloat light1_diffuse[] = { .4, .4, .4, 1.0 };
+            GLfloat light1_specular[] = { 0.1, 0.1, 0.1, 1.0 };
+            //GLfloat light1_position[] = { player.getXc() + 0.1*dx, player.getYc() + 0.1*dy, 50, 1};
+            GLfloat light1_position[] = { (float)0.1*dx, (float)0.1*dy, 0, 1};
+            GLfloat spot_direction[] = { dx, dy, 0, 1.0 };
 
-        //glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 45.0);
-        //glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spot_direction);
-        //glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 2.0);
+            glLightfv(GL_LIGHT1, GL_AMBIENT, light1_ambient);
+            glLightfv(GL_LIGHT1, GL_DIFFUSE, light1_diffuse);
+            glLightfv(GL_LIGHT1, GL_SPECULAR, light1_specular);
 
+            glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 25.0);
+            glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spot_direction);
+            glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 2.0);
+
+            glTranslatef(player.getXc(), player.getYc(), 20);
+            glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
+
+
+            //glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 1.5);
+            //glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.2);
+            //glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 1.5);
+
+        glPopMatrix();
+
+     
 
     }
     else
@@ -1118,7 +1141,7 @@ void DefineIluminacao (void)
     }
 
     // Ativa o uso da luz ambiente
-    if(night_mode)
+    if(!night_mode)
     {
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbienteDay);
         glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbienteDay);
@@ -1151,7 +1174,6 @@ void configObservator(void)
     {
 
         float DISTANCE_BACKWARD = 100;
-
 
         float dx = DISTANCE_BACKWARD*cos( ( player.getCarRotation() + camXYAngle ) * M_PI/180.0);
         dx*= cos( camXZAngle * M_PI/180.0 );
@@ -1192,11 +1214,11 @@ void configObservator(void)
 
         camera.setSrcX(player.getXc() + dx*0.3);
         camera.setSrcY(player.getYc() + dy*0.3);
-        camera.setSrcZ(50); //altura
+        camera.setSrcZ(30); //altura
 
         camera.setDstX(player.getXc()+dx);
         camera.setDstY(player.getYc()+dy);
-        camera.setDstZ(50);
+        camera.setDstZ(30);
 
         //camera atras do carro
         gluLookAt( camera.getSrcX(), camera.getSrcY(), camera.getSrcZ(),
@@ -1250,7 +1272,7 @@ void configGame(void)
     glLoadIdentity();
 
     // Especifica a projeção perspectiva(angulo,aspecto,zMin,zMax)
-    gluPerspective(camera.getAngle(),camera.getAspect(),5, 1000);
+    gluPerspective(camera.getAngle(),camera.getAspect(), 40, 1000);
 
     configObservator();
 }
