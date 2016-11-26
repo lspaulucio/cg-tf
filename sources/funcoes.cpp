@@ -426,56 +426,72 @@ GLuint textureOutsideArena;
 GLuint textureInsideArena;
 GLuint textureShot;
 GLuint textureFloor;
+GLuint textureDay;
+GLuint textureNight;
 
 void drawArenaOutside(float alpha)
 {
-    //Texture
-    glMatrixMode(GL_TEXTURE);
-    glPushMatrix();
-    glLoadIdentity();
-    glScalef(20, 20, 1); //20 is a constant that work
-    glMatrixMode(GL_MODELVIEW);
+    GLUquadric *obj;
 
-    GLUquadric *obj = gluNewQuadric();
     glColor3fv(WHITE_COLOR);
-    gluQuadricTexture(obj, GLU_TRUE);
-    gluQuadricOrientation(obj, GLU_OUTSIDE);
-    gluQuadricNormals(obj, GL_SMOOTH);
-    glBindTexture(GL_TEXTURE_2D, textureFloor);
     glPushMatrix();
-        glTranslatef(arena[0].getXc(),arena[0].getYc(),0);
+    glTranslatef(arena[0].getXc(),arena[0].getYc(),0);
+        obj = gluNewQuadric();
+        if(night_mode)
+            glBindTexture(GL_TEXTURE_2D, textureNight);
+        else glBindTexture(GL_TEXTURE_2D, textureDay);
+        gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
+        gluQuadricNormals(obj, GL_SMOOTH);//GL_FLAT / GL_SMOOTH
+        gluQuadricTexture(obj, GLU_TRUE);
+        gluQuadricOrientation(obj, GLU_INSIDE);
+        gluSphere(obj, arena[0].getRadius()+50, 30, 30);
+        gluDeleteQuadric(obj);
+
+        //Texture floor
+        glMatrixMode(GL_TEXTURE);
+        glPushMatrix();
+        glLoadIdentity();
+        glScalef(20, 20, 1); //20 is a constant that work
+        glMatrixMode(GL_MODELVIEW);
+
+        //Drawing floor
+        obj = gluNewQuadric();
+        glColor3fv(WHITE_COLOR);
+        gluQuadricTexture(obj, GLU_TRUE);
+        gluQuadricOrientation(obj, GLU_OUTSIDE);
+        gluQuadricNormals(obj, GL_SMOOTH);
+        glBindTexture(GL_TEXTURE_2D, textureFloor);
         gluDisk(obj, 0, arena[0].getRadius(), 50, 30);
-    glPopMatrix();
-    // arena[0].draw(alpha);
-    gluDeleteQuadric(obj);
 
-    obj = gluNewQuadric();
+        // arena[0].draw(alpha);
+        gluDeleteQuadric(obj);
 
-    glMatrixMode(GL_TEXTURE);
-    glPopMatrix();
-    glPushMatrix();
-    glLoadIdentity();
-    glScalef(20, 1, 1); //20 is a constant that work
-    glMatrixMode(GL_MODELVIEW);
+        obj = gluNewQuadric();
 
-    gluQuadricTexture(obj, GLU_TRUE);
-    gluQuadricOrientation(obj, GLU_INSIDE);
-    gluQuadricNormals(obj, GL_SMOOTH);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
-    glBindTexture(GL_TEXTURE_2D, textureOutsideArena);
-    // glEnable(GL_TEXTURE_GEN_S);
-    // glEnable(GL_TEXTURE_GEN_T);
+        glMatrixMode(GL_TEXTURE);
+        glPopMatrix();
+        glPushMatrix();
+        glLoadIdentity();
+        glScalef(20, 1, 1); //20 is a constant that work
+        glMatrixMode(GL_MODELVIEW);
 
-    //Draw options
-    gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
-    glColor3f(1.0, 1.0, 1.0);
+        gluQuadricTexture(obj, GLU_TRUE);
+        gluQuadricOrientation(obj, GLU_INSIDE);
+        gluQuadricNormals(obj, GL_SMOOTH);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+        glBindTexture(GL_TEXTURE_2D, textureOutsideArena);
+        // glEnable(GL_TEXTURE_GEN_S);
+        // glEnable(GL_TEXTURE_GEN_T);
 
-    glPushMatrix();
-        glTranslatef(arena[0].getXc(), arena[0].getYc(), 0);
-            gluCylinder(obj, arena[0].getRadius(), arena[0].getRadius(), 100, 100, 5);
-            gluDeleteQuadric(obj);
+        //Draw options
+        gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
+        glColor3f(1.0, 1.0, 1.0);
+
+        gluCylinder(obj, arena[0].getRadius(), arena[0].getRadius(), 100, 100, 5);
+        gluDeleteQuadric(obj);
+
     glPopMatrix();
 
 
@@ -543,6 +559,8 @@ void init(void)
     textureInsideArena = LoadTextureRAW("textures/parede.png");
     textureShot = LoadTextureRAW("textures/tiro.png");
     textureFloor = LoadTextureRAW("textures/solo.png");
+    textureDay = LoadTextureRAW("textures/dia.png");
+    textureNight = LoadTextureRAW("textures/noite.png");
 
     glShadeModel(GL_SMOOTH);
     glEnable(GL_LIGHTING);
