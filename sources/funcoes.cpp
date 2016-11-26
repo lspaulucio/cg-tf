@@ -432,6 +432,12 @@ void drawArenaOutside(float alpha)
     GLUquadric *obj = gluNewQuadric();
 
     //Texture
+    glMatrixMode(GL_TEXTURE);
+    glPushMatrix();
+    glLoadIdentity();
+    glScalef(20, 1, 1); //20 is a constant that work
+    glMatrixMode(GL_MODELVIEW);
+
     gluQuadricTexture(obj, GLU_TRUE);
     gluQuadricOrientation(obj, GLU_INSIDE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -441,6 +447,7 @@ void drawArenaOutside(float alpha)
     gluQuadricNormals(obj, GL_SMOOTH);
     // glEnable(GL_TEXTURE_GEN_S);
     // glEnable(GL_TEXTURE_GEN_T);
+
 
 
     //Draw options
@@ -453,6 +460,11 @@ void drawArenaOutside(float alpha)
             gluDeleteQuadric(obj);
     glPopMatrix();
 
+
+    glMatrixMode(GL_TEXTURE);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+
     // glDisable(GL_TEXTURE_GEN_S);
     // glDisable(GL_TEXTURE_GEN_T);
 }
@@ -464,6 +476,12 @@ void drawArenaInside(float alpha)
     GLUquadric *obj = gluNewQuadric();
 
     //Texture
+    glMatrixMode(GL_TEXTURE);
+    glPushMatrix();
+    glLoadIdentity();
+    glScalef(20, 1, 1); //20 is a constant that work
+    glMatrixMode(GL_MODELVIEW);
+
     gluQuadricTexture(obj, GLU_TRUE);
     gluQuadricOrientation(obj, GLU_OUTSIDE);
     glBindTexture (GL_TEXTURE_2D, textureInsideArena);
@@ -484,6 +502,9 @@ void drawArenaInside(float alpha)
             gluDeleteQuadric(obj);
     glPopMatrix();
 
+    glMatrixMode(GL_TEXTURE);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
     // glDisable(GL_TEXTURE_GEN_S);
     // glDisable(GL_TEXTURE_GEN_T);
 }
@@ -501,7 +522,7 @@ void init(void)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    textureOutsideArena = LoadTextureRAW("textures/parede2.png");
+    textureOutsideArena = LoadTextureRAW("textures/parede.png");
     textureInsideArena = LoadTextureRAW("textures/parede.png");
 
     glShadeModel(GL_SMOOTH);
@@ -1132,7 +1153,7 @@ void DefineIluminacao (void)
 
         glPopMatrix();
 
-     
+
 
     }
     else
