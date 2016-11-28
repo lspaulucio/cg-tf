@@ -18,6 +18,22 @@ int buttonDown=0;
 float lastX, lastY;
 int night_mode = 0;
 
+const float DEG2RAD = 3.14159/180;
+ 
+void drawCircumference(float radius)
+{
+    glColor3f(1.0,0,0);
+    glBegin(GL_LINE_LOOP);
+ 
+    for (int i=0; i < 360; i++)
+    {
+        float degInRad = i*DEG2RAD;
+        glVertex2f(cos(degInRad)*radius,sin(degInRad)*radius);
+    }
+ 
+   glEnd();
+}
+
 void readXMLFile(const char *path)
 {
     const char config_file_name[] = "config.xml";
@@ -588,15 +604,17 @@ void display(void)
     glEnable(GL_LIGHTING);
 
     configGame();
-        DefineIluminacao();
+    DefineIluminacao();
     drawAll(1.0);
 
     configRetrovisor();
-        DefineIluminacao();
+    DefineIluminacao();
     drawAll();
 
-    //configMiniMapa();
-    //drawAll(0.2);
+    glDisable(GL_LIGHTING);
+        configMiniMapa();
+        drawMiniMap(1.0);
+    glEnable(GL_LIGHTING);
 
     glutSwapBuffers();
 }
@@ -647,6 +665,40 @@ void drawAll(float alpha)
 
         for (list<Tiro>::iterator it = enemiesShots.begin(); it != enemiesShots.end(); it++)
             (*it).draw3d(alpha);
+    }
+}
+
+void drawMiniMap(float alpha)
+{
+
+    if(!WIN_FLAG && !LOSE_FLAG)
+    {
+
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        glPushMatrix();
+        glTranslatef(0, 0, 0);
+            rect.draw(alpha);
+        glPopMatrix();
+
+
+        glPushMatrix();
+
+            glTranslatef(0, 0, 0.1);
+
+            for (list<Carro>::iterator it = enemies.begin(); it != enemies.end(); it++)
+                (*it).draw('e', alpha);
+
+            player.draw('p',alpha);
+
+        glPopMatrix();
+
+        glPushMatrix();
+            glTranslatef(MainWindow.getWidth()/2, MainWindow.getHeight()/2, 0.1);
+            drawCircumference(arena[0].getRadius());
+            drawCircumference(arena[1].getRadius());
+        glPopMatrix();
     }
 }
 
@@ -1258,7 +1310,7 @@ void configObservator(void)
 
         camera.setDstX(player.getXc());
         camera.setDstY(player.getYc());
-        camera.setDstZ(0);
+        camera.setDstZ(30);
 
 
         float z = camXZAngle < 90 ? 1 : -1;
@@ -1367,11 +1419,11 @@ void configRetrovisor()
 
     camera.setSrcX(player.getXc());
     camera.setSrcY(player.getYc());
-    camera.setSrcZ(20); //altura
+    camera.setSrcZ(30); //altura
 
     camera.setDstX(player.getXc()-dx);
     camera.setDstY(player.getYc()-dy);
-    camera.setDstZ(0);
+    camera.setDstZ(30);
 
     //camera atras do carro
     gluLookAt( camera.getSrcX(), camera.getSrcY(), camera.getSrcZ(),

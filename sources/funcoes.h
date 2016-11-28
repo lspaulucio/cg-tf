@@ -60,5 +60,6 @@ void DefineIluminacao();
 void drawArenaOutside(float alpha=1);
 void drawArenaInside(float alpha=1);
 GLuint LoadTextureRAW(const char* filename);
+void drawMiniMap(float alpha = 1);
 
 #endif //FUNCOES_H
