@@ -19,6 +19,7 @@ Carro::Carro()
     this->setGunDirection(Y_AXIS, 1);
     this->setGunDirection(Z_AXIS, 0);
     this->randomWheel = this->randomGun = this->randomDirection = this->randomTime = 0;
+    this->textureCar = 0;
 }
 
 void Carro::copyInfo(Circulo& circle)
@@ -473,19 +474,19 @@ void Carro::draw3d(char type, float alpha)
             //drawing body car
             if(type == 'e')
             {
-                drawCube(carLength, carWidth, carHeight, ENEMY_BODY_COLOR, alpha);
+                drawCube(carLength, carWidth, carHeight, ENEMY_BODY_COLOR, alpha, getTextureCar());
                 glPushMatrix();
-                glTranslatef(0, 0, carHeight/2);
-                    drawCube(carLength/2, carWidth, carHeight, ENEMY_BODY_COLOR, alpha);
+                glTranslatef(0, 0, carHeight/1.35);
+                    drawCube(carLength/2, carWidth, carHeight/2, ENEMY_BODY_COLOR, alpha, getTextureCar());
                 glPopMatrix();
                 // drawEllipse(0.0, 0.0, ellipseSmallAxis, ellipseBigAxis, ELLIPSE_COLOR, 100, alpha);
             }
             else
             {
-                drawCube(carLength, carWidth, carHeight, BODY_COLOR, alpha);
+                drawCube(carLength, carWidth, carHeight, BODY_COLOR, alpha, getTextureCar());
                 glPushMatrix();
-                glTranslatef(0, 0, carHeight/2);
-                    drawCube(carLength/2, carWidth, carHeight, BODY_COLOR, alpha);
+                glTranslatef(0, 0, carHeight/1.35);
+                    drawCube(carLength/2, carWidth, carHeight/2, BODY_COLOR, alpha, getTextureCar());
                 glPopMatrix();
                 // drawEllipse(0.0, 0.0, ellipseSmallAxis, ellipseBigAxis, ENEMY_ELLIPSE_COLOR, 100, alpha);
             }
@@ -514,11 +515,11 @@ void Carro::draw3d(char type, float alpha)
 
                 if(type == 'e'){
                     glColor3fv(ENEMY_GUN_COLOR);
-                    drawCylinder(gunRadius, gunLength);
+                    drawCylinder(gunRadius, gunLength, getTextureCar());
                 }
                 else{
                     glColor3fv(GUN_COLOR);
-                    drawCylinder(gunRadius, gunLength);
+                    drawCylinder(gunRadius, gunLength, getTextureCar());
                 }
                 glPopMatrix();
 
@@ -536,7 +537,7 @@ void Carro::draw3d(char type, float alpha)
                 glTranslatef(-carWidth/2, -wheelAxisDistance, -wheelRadius/2);
                     glRotatef(this->getWheelRotation(), 0, 0, 1);
                         glColor3fv(GREY_COLOR);
-                        drawWheel(wheelRadius, wheelWidth);
+                        drawWheel(wheelRadius, wheelWidth, getTextureCalota(), getTextureWheel());
 
 
                     // drawRectangle(-wheelWidth/2, wheelLength/2, wheelWidth/2, -wheelLength/2, WHEEL_COLOR, alpha);
@@ -561,7 +562,7 @@ void Carro::draw3d(char type, float alpha)
                 glTranslatef(carWidth/2 + 30, -wheelAxisDistance, -wheelRadius/2);
                     glRotated(this->getWheelRotation(), 0.0, 0.0, 1);
                         glColor3fv(GREY_COLOR);
-                        drawWheel(wheelRadius, wheelWidth);
+                        drawWheel(wheelRadius, wheelWidth, getTextureCalota(), getTextureWheel());
 
                     // //Wheel move effect
                     // if(isMoving())
@@ -624,7 +625,7 @@ void Carro::draw3d(char type, float alpha)
                 //drawing wheel bottom left
                 glTranslatef(-carWidth/2, wheelAxisDistance, -wheelRadius/2);
                     glColor3fv(GREY_COLOR);
-                    drawWheel(wheelRadius, wheelWidth);
+                    drawWheel(wheelRadius, wheelWidth, getTextureCalota(), getTextureWheel());
                     // //Wheel move effect
                     // if(isMoving())
                     // {
@@ -645,7 +646,7 @@ void Carro::draw3d(char type, float alpha)
                 //drawing wheel bottom right
                 glTranslatef(carWidth/2 + 30, wheelAxisDistance, -wheelRadius/2);
                     glColor3fv(GREY_COLOR);
-                    drawWheel(wheelRadius, wheelWidth);
+                    drawWheel(wheelRadius, wheelWidth, getTextureCalota(), getTextureWheel());
                     //Wheel move effect
                     // if(isMoving())
                     // {
@@ -763,6 +764,38 @@ float* Carro::randomMove(double timeDif, int id)
 
     return move(randomDirection, timeDif);
 }
+
+void Carro::setTextureCar(GLuint texture)
+{
+    this->textureCar = texture;
+}
+
+GLuint Carro::getTextureCar()
+{
+    return this->textureCar;
+}
+
+void Carro::setTextureCalota(GLuint texture)
+{
+    this->textureCalota = texture;
+}
+
+GLuint Carro::getTextureCalota()
+{
+    return this->textureCalota;
+}
+
+void Carro::setTextureWheel(GLuint texture)
+{
+    this->textureWheel = texture;
+}
+
+GLuint Carro::getTextureWheel()
+{
+    return this->textureWheel;
+}
+
+
 
 float* Carro::getGunTip()
 {

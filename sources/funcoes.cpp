@@ -19,18 +19,18 @@ float lastX, lastY;
 int night_mode = 0;
 
 const float DEG2RAD = 3.14159/180;
- 
+
 void drawCircumference(float radius)
 {
     glColor3f(1.0,0,0);
     glBegin(GL_LINE_LOOP);
- 
+
     for (int i=0; i < 360; i++)
     {
         float degInRad = i*DEG2RAD;
         glVertex2f(cos(degInRad)*radius,sin(degInRad)*radius);
     }
- 
+
    glEnd();
 }
 
@@ -267,7 +267,7 @@ void drawRectangle(float x1, float y1, float x2, float y2, const float colors[3]
     glEnd();
 }
 
-void drawCube(float length, float width, float height, const float colors[3], float alpha)
+void drawCube(float length, float width, float height, const float colors[3], float alpha, GLuint texture)
 {
     float l = length/2;
     float w = width/2;
@@ -275,69 +275,69 @@ void drawCube(float length, float width, float height, const float colors[3], fl
 
     glColor3fv(colors);
 
-    glBegin(GL_TRIANGLE_FAN);
+    glBindTexture (GL_TEXTURE_2D, texture);
+    glBegin(GL_QUADS);
 	// top
 	// glColor3f(0.0f, 0.0f, 0.0f);
-	glNormal3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(-w, l, h);
-	glVertex3f(w, l, h);
-	glVertex3f(w, l, -h);
-	glVertex3f(-w, l, -h);
+    glNormal3f(0.0f, 1.0f, 0.0f);
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-w, l, h);
+	glTexCoord2f(1.0f, 0.0f); glVertex3f(w, l, h);
+	glTexCoord2f(1.0f, 1.0f); glVertex3f(w, l, -h);
+	glTexCoord2f(0.0f, 1.0f); glVertex3f(-w, l, -h);
 
 	glEnd();
 
-	glBegin(GL_TRIANGLE_FAN);
+	glBegin(GL_QUADS);
 	// front
 	// glColor3f(0.0f, 0.0f, 1.0f);
 	glNormal3f(0.0f, 0.0f, 1.0f);
-	glVertex3f(w, -l, h);
-	glVertex3f(w, l, h);
-	glVertex3f(-w, l, h);
-	glVertex3f(-w, -l, h);
-
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(w, -l, h);
+	glTexCoord2f(1.0f, 0.0f); glVertex3f(w, l, h);
+	glTexCoord2f(1.0f, 1.0f); glVertex3f(-w, l, h);
+	glTexCoord2f(0.0f, 1.0f); glVertex3f(-w, -l, h);
 	glEnd();
 
-	glBegin(GL_TRIANGLE_FAN);
+	glBegin(GL_QUADS);
 	// right
 	// glColor3f(0.0f, 1.0f, 0.0f);
 	glNormal3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(w, l, -h);
-	glVertex3f(w, l, h);
-	glVertex3f(w, -l, h);
-	glVertex3f(w, -l, -h);
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(w, l, -h);
+	glTexCoord2f(1.0f, 0.0f); glVertex3f(w, l, h);
+	glTexCoord2f(1.0f, 1.0f); glVertex3f(w, -l, h);
+	glTexCoord2f(0.0f, 1.0f); glVertex3f(w, -l, -h);
 
 	glEnd();
 
-	glBegin(GL_TRIANGLE_FAN);
+	glBegin(GL_QUADS);
 	// left
 	// glColor3f(0.0f, 1.0f, 1.0f);
 	glNormal3f(-1.0f, 0.0f, 0.0f);
-	glVertex3f(-w, -l, h);
-	glVertex3f(-w, l, h);
-	glVertex3f(-w, l, -h);
-	glVertex3f(-w, -l, -h);
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(-w, -l, h);
+	glTexCoord2f(1.0f, 0.0f); glVertex3f(-w, l, h);
+	glTexCoord2f(1.0f, 1.0f); glVertex3f(-w, l, -h);
+	glTexCoord2f(0.0f, 1.0f); glVertex3f(-w, -l, -h);
 
 	glEnd();
 
-	glBegin(GL_TRIANGLE_FAN);
+	glBegin(GL_QUADS);
 	// bottom
 	// glColor3f(1.0f, 0.0f, 0.0f);
 	glNormal3f(0.0f, -1.0f, 0.0f);
-	glVertex3f(w, -l, h);
-	glVertex3f(-w, -l, h);
-	glVertex3f(-w, -l, -h);
-	glVertex3f(w, -l, -h);
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(w, -l, h);
+	glTexCoord2f(1.0f, 0.0f); glVertex3f(-w, -l, h);
+	glTexCoord2f(1.0f, 1.0f); glVertex3f(-w, -l, -h);
+	glTexCoord2f(0.0f, 1.0f); glVertex3f(w, -l, -h);
 
 	glEnd();
 
-	glBegin(GL_TRIANGLE_FAN);
+	glBegin(GL_QUADS);
 	// back
 	// glColor3f(1.0f, 0.0f, 1.0f);
 	glNormal3f(0.0f, 0.0f, -1.0f);
-	glVertex3f(w, l, -h);
-	glVertex3f(w, -l, -h);
-	glVertex3f(-w, -l, -h);
-	glVertex3f(-w, l, -h);
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(w, l, -h);
+	glTexCoord2f(1.0f, 0.0f); glVertex3f(w, -l, -h);
+	glTexCoord2f(1.0f, 1.0f); glVertex3f(-w, -l, -h);
+	glTexCoord2f(0.0f, 1.0f); glVertex3f(-w, l, -h);
 
 	glEnd();
 }
@@ -352,10 +352,13 @@ void drawCone(float radius, float height)
     gluDeleteQuadric(obj);
 }
 
-void drawCylinder(float radius, float height)
+void drawCylinder(float radius, float height, GLuint texture)
 {
     GLUquadric *obj = gluNewQuadric();
     gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
+    gluQuadricTexture(obj, GLU_TRUE);
+    gluQuadricOrientation(obj, GLU_OUTSIDE);
+    glBindTexture(GL_TEXTURE_2D, texture);
     gluQuadricNormals(obj, GL_SMOOTH);//GL_FLAT / GL_SMOOTH
     gluCylinder(obj, radius, radius, height, 30, 50);
     glPushMatrix();
@@ -371,6 +374,22 @@ void drawSphere(float radius)
     gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
     gluQuadricNormals(obj, GL_SMOOTH);//GL_FLAT / GL_SMOOTH
     gluSphere(obj, radius, 30, 50);
+    gluDeleteQuadric(obj);
+}
+
+void drawCalota(float xc, float yc, float radius, bool front, GLuint texture)
+{
+    GLUquadric *obj = gluNewQuadric();
+    gluQuadricDrawStyle(obj, GL_TRIANGLE_FAN);
+    gluQuadricNormals(obj, GL_SMOOTH);//GL_FLAT / GL_SMOOTH
+    gluQuadricTexture(obj, GLU_TRUE);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    if(front)
+        gluQuadricOrientation(obj, GLU_OUTSIDE);
+    else gluQuadricOrientation(obj, GLU_INSIDE);
+
+    gluDisk(obj, 0, radius, 30, 30);
     gluDeleteQuadric(obj);
 }
 
@@ -425,15 +444,27 @@ void drawEllipse(float xc, float yc, float width, float height, const float colo
     glEnd();
 }
 
-void drawWheel(float radius, float width)
+void drawWheel(float radius, float width, GLuint textureCalota, GLuint textureRoda)
 {
     glPushMatrix();
-        glRotatef(90, 1.0, 0.0, 0.0);
         glRotatef(-90, 0.0, 1.0, 0.0);
-        drawCircle(0, 0, radius);
-        drawCylinder(radius, width);
-        glTranslatef(0.0,0.0,width);
-            drawCircle(0, 0, radius);
+
+        glMatrixMode(GL_TEXTURE);
+        glPushMatrix();
+        glLoadIdentity();
+        glScalef(8, 1, 1); //20 is a constant that work
+        glMatrixMode(GL_MODELVIEW);
+        drawCylinder(radius, width, textureRoda);
+
+        glMatrixMode(GL_TEXTURE);
+            glPopMatrix();
+        glMatrixMode(GL_MODELVIEW);
+
+        drawCalota(0, 0, radius, true, textureCalota);
+        glTranslatef(0.0,0.0,width+0.1);
+            drawCalota(0, 0, radius, true, textureCalota);
+
+
     glPopMatrix();
 }
 
@@ -444,6 +475,7 @@ GLuint textureShot;
 GLuint textureFloor;
 GLuint textureDay;
 GLuint textureNight;
+GLuint textureCar, textureWheel, textureCalota;
 
 void drawArenaOutside(float alpha)
 {
@@ -475,8 +507,8 @@ void drawArenaOutside(float alpha)
         glColor3fv(WHITE_COLOR);
         gluQuadricTexture(obj, GLU_TRUE);
         gluQuadricOrientation(obj, GLU_OUTSIDE);
-        gluQuadricNormals(obj, GL_SMOOTH);
         glBindTexture(GL_TEXTURE_2D, textureFloor);
+        gluQuadricNormals(obj, GL_SMOOTH);
         gluDisk(obj, 0, arena[0].getRadius(), 50, 30);
 
         // arena[0].draw(alpha);
@@ -577,6 +609,20 @@ void init(void)
     textureFloor = LoadTextureRAW("textures/solo.png");
     textureDay = LoadTextureRAW("textures/dia.png");
     textureNight = LoadTextureRAW("textures/noite.png");
+    textureCar = LoadTextureRAW("textures/carro.png");
+    textureCalota = LoadTextureRAW("textures/calota.png");
+    textureWheel = LoadTextureRAW("textures/roda.png");
+
+    player.setTextureCar(textureCar);
+    player.setTextureCalota(textureCalota);
+    player.setTextureWheel(textureWheel);
+
+    for (list<Carro>::iterator it = enemies.begin(); it != enemies.end(); it++)
+    {
+        it->setTextureCar(textureCar);
+        it->setTextureCalota(textureCalota);
+        it->setTextureWheel(textureWheel);
+    }
 
     glShadeModel(GL_SMOOTH);
     glEnable(GL_LIGHTING);
