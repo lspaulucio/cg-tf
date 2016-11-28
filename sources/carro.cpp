@@ -20,6 +20,7 @@ Carro::Carro()
     this->setGunDirection(Z_AXIS, 0);
     this->randomWheel = this->randomGun = this->randomDirection = this->randomTime = 0;
     this->textureCar = 0;
+    this->wheelMoviment = 0;
 }
 
 void Carro::copyInfo(Circulo& circle)
@@ -536,6 +537,7 @@ void Carro::draw3d(char type, float alpha)
             //drawing wheel upper left
                 glTranslatef(-carWidth/2, -wheelAxisDistance, -wheelRadius/2);
                     glRotatef(this->getWheelRotation(), 0, 0, 1);
+                        glRotatef(getWheelMoviment()*180/M_PI, 1.0, 0, 0);
                         glColor3fv(GREY_COLOR);
                         drawWheel(wheelRadius, wheelWidth, getTextureCalota(), getTextureWheel());
 
@@ -561,6 +563,7 @@ void Carro::draw3d(char type, float alpha)
                 //drawing wheel upper right
                 glTranslatef(carWidth/2 + 30, -wheelAxisDistance, -wheelRadius/2);
                     glRotated(this->getWheelRotation(), 0.0, 0.0, 1);
+                        glRotatef(getWheelMoviment()*180/M_PI, 1.0, 0, 0);
                         glColor3fv(GREY_COLOR);
                         drawWheel(wheelRadius, wheelWidth, getTextureCalota(), getTextureWheel());
 
@@ -625,6 +628,7 @@ void Carro::draw3d(char type, float alpha)
                 //drawing wheel bottom left
                 glTranslatef(-carWidth/2, wheelAxisDistance, -wheelRadius/2);
                     glColor3fv(GREY_COLOR);
+                    glRotatef(getWheelMoviment()*180/M_PI, 1.0, 0, 0);
                     drawWheel(wheelRadius, wheelWidth, getTextureCalota(), getTextureWheel());
                     // //Wheel move effect
                     // if(isMoving())
@@ -646,6 +650,7 @@ void Carro::draw3d(char type, float alpha)
                 //drawing wheel bottom right
                 glTranslatef(carWidth/2 + 30, wheelAxisDistance, -wheelRadius/2);
                     glColor3fv(GREY_COLOR);
+                    glRotatef(getWheelMoviment()*180/M_PI, 1.0, 0, 0);
                     drawWheel(wheelRadius, wheelWidth, getTextureCalota(), getTextureWheel());
                     //Wheel move effect
                     // if(isMoving())
@@ -686,6 +691,7 @@ float* Carro::move(bool direction, double time)
 
     if(direction)
     {
+        setWheelMoviment(getWheelMoviment() + 5*180/(2*M_PI*50));
         if(theta > 0) //wheel curved to left
         {
             carRotation += CAR_ROTATION_STEP;
@@ -707,6 +713,7 @@ float* Carro::move(bool direction, double time)
     }
     else
     {
+        setWheelMoviment(getWheelMoviment() - 5*180/(2*M_PI*50));
         if(theta > 0) //wheel curved to left
         {
             carRotation -= CAR_ROTATION_STEP;
@@ -793,6 +800,16 @@ void Carro::setTextureWheel(GLuint texture)
 GLuint Carro::getTextureWheel()
 {
     return this->textureWheel;
+}
+
+void Carro::setWheelMoviment(int angle)
+{
+    this->wheelMoviment = angle;
+}
+
+int Carro::getWheelMoviment()
+{
+    return this->wheelMoviment;
 }
 
 

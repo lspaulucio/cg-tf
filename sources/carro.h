@@ -18,6 +18,7 @@ private:
     float carRotation, gunRotation, gunRotationZ, wheelRotation;
     int randomWheel, randomGun, randomDirection, randomTime;
     GLuint textureCar, textureWheel, textureCalota;
+    int wheelMoviment;
 
 public:
     Carro();
@@ -86,6 +87,9 @@ public:
 
     void setTextureWheel(GLuint texture);
     GLuint getTextureWheel();
+
+    void setWheelMoviment(int angle);
+    int getWheelMoviment();
 
     Tiro shoot();
 
