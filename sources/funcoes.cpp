@@ -612,8 +612,10 @@ void display(void)
     drawAll();
 
     glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
         configMiniMapa();
         drawMiniMap(1.0);
+    glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
 
     glutSwapBuffers();
@@ -673,7 +675,6 @@ void drawMiniMap(float alpha)
 
     if(!WIN_FLAG && !LOSE_FLAG)
     {
-
 
         glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -1443,6 +1444,12 @@ void configMiniMapa()
     glLoadIdentity();
 
     glOrtho(0, _w, 0, _h, -1.0, 1.0);
+
+    // Especifica sistema de coordenadas do modelo
+    glMatrixMode(GL_MODELVIEW);
+
+    // Inicializa sistema de coordenadas do modelo
+    glLoadIdentity();
 }
 
 void configHud()
