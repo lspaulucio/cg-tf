@@ -3,7 +3,7 @@
 Camera::Camera()
 {
 	this->type = CAMERA_01;
-	this->angle = 50;
+	this->angle = 70;
 	this->aspect = 0;
 }
 

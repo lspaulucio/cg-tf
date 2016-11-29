@@ -17,6 +17,8 @@ double camXZAngle=30;
 int buttonDown=0;
 float lastX, lastY;
 int night_mode = 0;
+int miniMap = 0;
+int textureEnable = 0;
 
 const float DEG2RAD = 3.14159/180;
 
@@ -460,7 +462,7 @@ void drawWheel(float radius, float width, GLuint textureCalota, GLuint textureRo
             glPopMatrix();
         glMatrixMode(GL_MODELVIEW);
 
-        drawCalota(0, 0, radius, true, textureCalota);
+        drawCalota(0, 0, radius, false, textureCalota);
         glTranslatef(0.0,0.0,width+0.1);
             drawCalota(0, 0, radius, true, textureCalota);
 
@@ -644,10 +646,6 @@ void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glDisable(GL_LIGHTING);
-        configHud();
-        drawHub();
-    glEnable(GL_LIGHTING);
 
     configGame();
     DefineIluminacao();
@@ -659,18 +657,30 @@ void display(void)
 
     glDisable(GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
-        configMiniMapa();
-        drawMiniMap(1.0);
+        configHud();
+        drawHud();
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
+
+    if(miniMap)
+    {
+      glDisable(GL_LIGHTING);
+      glDisable(GL_DEPTH_TEST);
+          configMiniMapa();
+          drawMiniMap(1.0);
+      glEnable(GL_DEPTH_TEST);
+      glEnable(GL_LIGHTING);
+    }
 
     glutSwapBuffers();
 }
 
-void drawHub()
+void drawHud()
 {
 
-    glDisable(GL_TEXTURE_2D);
+    // glDisable(GL_TEXTURE_2D);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     if(WIN_FLAG)
         printMessage(MainWindow.getWidth()/4, MainWindow.getHeight()/2, "Congratulations!!! You won the game");
@@ -679,7 +689,7 @@ void drawHub()
     else
         printClock(MainWindow.getWidth() - MainWindow.getWidth() / 4, MainWindow.getHeight() - 20);
 
-    glEnable(GL_TEXTURE_2D);
+    // glEnable(GL_TEXTURE_2D);
 }
 
 void drawAll(float alpha)
@@ -704,11 +714,10 @@ void drawAll(float alpha)
         player.draw3d('p',alpha);
 
 
+        glBindTexture(GL_TEXTURE_2D, textureShot);
         for (list<Tiro>::iterator it = playerShots.begin(); it != playerShots.end(); it++)
-        {
-            glBindTexture(GL_TEXTURE_2D, textureShot);
-            (*it).draw3d(alpha);
-        }
+          (*it).draw3d(alpha);
+
 
 
         for (list<Tiro>::iterator it = enemiesShots.begin(); it != enemiesShots.end(); it++)
@@ -1042,6 +1051,21 @@ void keypress (unsigned char key, int x, int y)
        case 'e':
          exit(0);
 
+      case 'm':
+      case 'M':
+        miniMap = !miniMap;
+        break;
+
+      case 't':
+      case 'T':
+        if(textureEnable)
+          glEnable(GL_TEXTURE_2D);
+        else glDisable(GL_TEXTURE_2D);
+
+        textureEnable = !textureEnable;
+        break;
+
+
       default:
           break;
   }
@@ -1171,7 +1195,11 @@ int seconds = 0;
 
 void printClock(GLfloat x, GLfloat y) //Printing elapsed time
 {
-    glColor3f(0.0,0.0,0.0);
+    if(night_mode)
+      glColor3f(1.0,1.0,1.0);
+    else
+      glColor3f(0.0,0.0,0.0);
+
     //Create a string to be printed
     char *tmpStr;
     sprintf(str, "Lap Time: %d s", seconds);
@@ -1222,7 +1250,8 @@ void printMessage(int x, int y, const char* message)
 {
     const char *tmpStr;
 
-    glColor3f(0.0,0.0,0.0);
+	glColor3f(0.0,0.0,0.0);
+
     //Define the position to start printing
     glRasterPos2f(x, y);
     //Print  the first Char with a certain font
@@ -1244,7 +1273,7 @@ void DefineIluminacao (void)
 
     GLfloat luzDifusa[4]={0.4,0.4,0.4,1.0};    // "cor"
     GLfloat luzEspecular[4]={0.1, 0.1, 0.1, 1.0}; //"brilho"
-    GLfloat posicaoLuz[4]={0.0, 0, 100.0, 1.0};
+    GLfloat posicaoLuz[4]={arena[0].getXc(), arena[0].getYc(), 300.0, 1.0};
 
     // Capacidade de brilho do material
     GLfloat especularidade[4]={0.1,0.1,0.1,1.0};
@@ -1434,7 +1463,7 @@ void configGame(void)
     glLoadIdentity();
 
     // Especifica a projeção perspectiva(angulo,aspecto,zMin,zMax)
-    gluPerspective(camera.getAngle(),camera.getAspect(), 40, 1000);
+    gluPerspective(camera.getAngle(),camera.getAspect(), 30, 1000);
 
     configObservator();
 }
@@ -1451,7 +1480,7 @@ void configRetrovisor()
     // Inicializa sistema de coordenadas de projeção
     glLoadIdentity();
 
-    gluPerspective(camera.getAngle(),camera.getAspect(),50,1000);
+    gluPerspective(camera.getAngle(),camera.getAspect(),30,1000);
 
     // Especifica sistema de coordenadas do modelo
     glMatrixMode(GL_MODELVIEW);
@@ -1482,7 +1511,7 @@ void configMiniMapa()
 {
     glLoadIdentity();
 
-    glViewport(_w/2, 0, _w/2, _h/2);
+    glViewport(3*_w/4, 0, _w/4, _h/4);
 
     glMatrixMode(GL_PROJECTION);
 
@@ -1511,7 +1540,7 @@ void configHud()
 void reshape(GLsizei w, GLsizei h)
 {
     // Para previnir uma divisão por zero
-    if ( h == 0 ) h = 1;
+    if(h == 0) h = 1;
 
     // Calcula a correção de aspecto
     camera.setAspect((GLfloat)w/(GLfloat)h);
