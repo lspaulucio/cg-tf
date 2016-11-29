@@ -741,6 +741,7 @@ float* Carro::randomMove(double timeDif, int id)
 {
     const int TIME = 1500;
 
+    setMoving(true);
     randomTime += timeDif;
 
     if(randomTime >= TIME) {

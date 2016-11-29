@@ -477,7 +477,7 @@ GLuint textureShot;
 GLuint textureFloor;
 GLuint textureDay;
 GLuint textureNight;
-GLuint textureCar, textureWheel, textureCalota;
+GLuint textureCar, textureEnemy, textureWheel, textureCalota;
 
 void drawArenaOutside(float alpha)
 {
@@ -612,6 +612,7 @@ void init(void)
     textureDay = LoadTextureRAW("textures/dia.png");
     textureNight = LoadTextureRAW("textures/noite.png");
     textureCar = LoadTextureRAW("textures/carro.png");
+    textureEnemy = LoadTextureRAW("textures/carro2.png");
     textureCalota = LoadTextureRAW("textures/calota.png");
     textureWheel = LoadTextureRAW("textures/roda.png");
 
@@ -621,7 +622,7 @@ void init(void)
 
     for (list<Carro>::iterator it = enemies.begin(); it != enemies.end(); it++)
     {
-        it->setTextureCar(textureCar);
+        it->setTextureCar(textureEnemy);
         it->setTextureCalota(textureCalota);
         it->setTextureWheel(textureWheel);
     }
