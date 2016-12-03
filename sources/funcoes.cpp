@@ -9,7 +9,7 @@ extern list<Tiro> playerShots, enemiesShots;
 extern int key_status[256];
 extern Camera camera;
 
-int _w, _h;
+float _w, _h;
 
 //camera
 double camXYAngle=0;
@@ -684,11 +684,11 @@ void drawHud()
     glBindTexture(GL_TEXTURE_2D, 0);
 
     if(WIN_FLAG)
-        printMessage(MainWindow.getWidth()/4, MainWindow.getHeight()/2, "Congratulations!!! You won the game");
+        printMessage((MainWindow.getWidth()-370)/2, MainWindow.getHeight()/2, "Congratulations!!! You won the game");
     else if(LOSE_FLAG)
-        printMessage(MainWindow.getWidth()/4, MainWindow.getHeight()/2, "Game Over!!!   An enemy hit you");
+        printMessage((MainWindow.getWidth()-370)/2, MainWindow.getHeight()/2, "Game Over!!!   An enemy hit you");
     else
-        printClock(MainWindow.getWidth() - MainWindow.getWidth() / 4, MainWindow.getHeight() - 20);
+        printClock(MainWindow.getWidth() - 130, MainWindow.getHeight() - 20);
 
     // glEnable(GL_TEXTURE_2D);
 }
@@ -739,7 +739,6 @@ void drawMiniMap(float alpha)
             rect.draw(alpha);
         glPopMatrix();
 
-
         glPushMatrix();
 
             glTranslatef(0, 0, 0.1);
@@ -752,7 +751,7 @@ void drawMiniMap(float alpha)
         glPopMatrix();
 
         glPushMatrix();
-            glTranslatef(MainWindow.getWidth()/2, MainWindow.getHeight()/2, 0.1);
+            glTranslatef(350, 350, 0.1);
             drawCircumference(arena[0].getRadius());
             drawCircumference(arena[1].getRadius());
         glPopMatrix();
@@ -1404,8 +1403,8 @@ void configObservator(void)
         float dx = DISTANCE_FORWARD*cos(player.getCarRotation() * M_PI/180.0);
         float dy = DISTANCE_FORWARD*sin(player.getCarRotation() * M_PI/180.0);
 
-        camera.setSrcX(player.getXc() + dx*0.3);
-        camera.setSrcY(player.getYc() + dy*0.3);
+        camera.setSrcX(player.getXc() - dx*0.4);
+        camera.setSrcY(player.getYc() - dy*0.4);
         camera.setSrcZ(30); //altura
 
         camera.setDstX(player.getXc()+dx);
@@ -1464,7 +1463,7 @@ void configGame(void)
     glLoadIdentity();
 
     // Especifica a projeção perspectiva(angulo,aspecto,zMin,zMax)
-    gluPerspective(camera.getAngle(),camera.getAspect(), 30, 1000);
+    gluPerspective(camera.getAngle(), _w/(_h-200), 30, 1000);
 
     configObservator();
 }
@@ -1481,7 +1480,7 @@ void configRetrovisor()
     // Inicializa sistema de coordenadas de projeção
     glLoadIdentity();
 
-    gluPerspective(camera.getAngle(),camera.getAspect(),30,1000);
+    gluPerspective(camera.getAngle(),_w/200,30,1000);
 
     // Especifica sistema de coordenadas do modelo
     glMatrixMode(GL_MODELVIEW);
@@ -1512,14 +1511,14 @@ void configMiniMapa()
 {
     glLoadIdentity();
 
-    glViewport(3*_w/4, 0, _w/4, _h/4);
+    glViewport(_w - _h/4, 0, _h/4, _h/4);
 
     glMatrixMode(GL_PROJECTION);
 
     // Inicializa sistema de coordenadas de projeção
     glLoadIdentity();
 
-    glOrtho(0, _w, 0, _h, -1.0, 1.0);
+    glOrtho(0, 700, 0, 700, -1.0, 1.0);
 
     // Especifica sistema de coordenadas do modelo
     glMatrixMode(GL_MODELVIEW);
@@ -1544,10 +1543,15 @@ void reshape(GLsizei w, GLsizei h)
     if(h == 0) h = 1;
 
     // Calcula a correção de aspecto
-    camera.setAspect((GLfloat)w/(GLfloat)h);
+    camera.setAspect((GLfloat)w/((GLfloat)h));
+
+    MainWindow.setWidth(w);
+    MainWindow.setHeight(h);
 
     _w = w;
     _h = h;
+
+    printf("w:%d h:%d\n", w, h);
 
 }
 
