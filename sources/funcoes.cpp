@@ -698,13 +698,15 @@ void drawAll(float alpha)
 
     if(!WIN_FLAG && !LOSE_FLAG)
     {
-
-        drawArenaOutside(alpha);
+        glPushMatrix();
+            glTranslatef(0.0, 0.0, 0.1);
+                drawArenaOutside(alpha);
+        glPopMatrix();
 
         drawArenaInside(alpha);
 
         glPushMatrix();
-        glTranslatef(0, 0, 0.1);
+        glTranslatef(0, 0, 0.15);
             rect.draw(alpha);
         glPopMatrix();
 
@@ -1111,9 +1113,9 @@ void mouse(int key, int state, int x, int y)
 
     if (key == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
     {
-        int hx = MainWindow.getWidth();
-        int theta = -120.0/hx*x + 60.0;
-        int alphaZ = -90.0/hy*y + 22.5;
+        // int hx = MainWindow.getWidth();
+        int theta = -120.0/_w*x + 60.0;
+        int alphaZ = -90.0/_h*y + 22.5;
 
         player.setGunRotation(theta);
         player.setGunRotationZ(alphaZ);
@@ -1139,12 +1141,12 @@ void mouse(int key, int state, int x, int y)
 
 void passiveMouse(int x, int y)
 {
-    int hx = MainWindow.getWidth(), hy = MainWindow.getHeight();
+    int hy = MainWindow.getHeight();
 
     y = hy - y; //Adjusting Y-Axis
 
-    int theta = -120.0/hx*x + 60.0;
-    int alphaZ = -90.0/hy*y + 22.5;
+    int theta = -120.0/_w*x + 60.0;
+    int alphaZ = -90.0/_h*y + 22.5;
 
     player.setGunRotation(theta);
     player.setGunRotationZ(alphaZ);
