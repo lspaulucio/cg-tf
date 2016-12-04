@@ -566,7 +566,7 @@ void drawArenaInside(float alpha)
     glMatrixMode(GL_MODELVIEW);
 
     gluQuadricTexture(obj, GLU_TRUE);
-    gluQuadricOrientation(obj, GLU_OUTSIDE);
+    gluQuadricOrientation(obj, GLU_INSIDE);
     glBindTexture (GL_TEXTURE_2D, textureInsideArena);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -1548,7 +1548,7 @@ void reshape(GLsizei w, GLsizei h)
     _w = w;
     _h = h;
 
-    printf("w:%d h:%d\n", w, h);
+    // printf("w:%d h:%d\n", w, h);
 
 }
 
