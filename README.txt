@@ -30,4 +30,3 @@ Autores: 	Gabriel Santa Clara Ucelli
 ######################################################################################################################
 Vitória: Para ganhar você tem que cruzar a linha de chegada dando uma volta completa na arena no sentido anti-horário.
 Derrota: Caso um inimigo acerte um tiro em você.
-
