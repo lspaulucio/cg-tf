@@ -19,9 +19,9 @@ Autores: 	Gabriel Santa Clara Ucelli
 	T	----------------------------------------- 	Ativa/Desativa a textura
 	M	----------------------------------------- 	Ativa/Desativa o minimapa
 
-	F1	-----------------------------------------	Muda para a camera 01 (3ª pessoa)
-	F2	-----------------------------------------	Muda para a camera 02 (cockpit do carro)
-	F3	-----------------------------------------	Muda para a camera 03 (canhão do carro)
+	1	-----------------------------------------	Muda para a camera 01 (3ª pessoa)
+	2	-----------------------------------------	Muda para a camera 02 (cockpit do carro)
+	3	-----------------------------------------	Muda para a camera 03 (canhão do carro)
 
 	Botão Esquerdo do Mouse -------------------------	Atira
 	Botão Direito do Mouse + Movimento do Mouse ----- 	Movimenta a câmera número 01 ao redor do carro (3ª pessoa)
