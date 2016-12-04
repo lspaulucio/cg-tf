@@ -34,7 +34,7 @@ run: all
 	./$(EXECUTABLE_NAME) ./
 
 zip: clean
-	zip -r $(AUTHOR_NAME).zip main.cpp tinyxml2 sources imageLoader textures Makefile
+	zip -r $(AUTHOR_NAME).zip main.cpp README.txt arena.svg config.xml tinyxml2 sources imageLoader textures Makefile
 
 rebuild: clean all
 

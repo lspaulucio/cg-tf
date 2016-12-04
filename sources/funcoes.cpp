@@ -1005,13 +1005,13 @@ void keyUp (unsigned char key, int x, int y)
 
         case 'd':
         case 'D':
-          key_status['d'] = 0;
-          break;
+            key_status['d'] = 0;
+            break;
 
         case 'a':
         case 'A':
-          key_status['a'] = 0;
-          break;
+            key_status['a'] = 0;
+            break;
 
         default:
             break;
@@ -1020,57 +1020,75 @@ void keyUp (unsigned char key, int x, int y)
 
 void keypress (unsigned char key, int x, int y)
 {
-  switch (key)
-  {
-      case 'w':
-      case 'W':
-          key_status['w'] = 1;
-          player.setMoving(true);
-        break;
+    switch (key)
+    {
+        case 'w':
+        case 'W':
+            key_status['w'] = 1;
+            player.setMoving(true);
+            break;
 
-      case 's':
-      case 'S':
-          key_status['s'] = 1;
-          player.setMoving(true);
-        break;
+        case 's':
+        case 'S':
+            key_status['s'] = 1;
+            player.setMoving(true);
+            break;
 
-      case 'd':
-      case 'D':
-        key_status['d'] = 1;
-        break;
+        case 'd':
+        case 'D':
+            key_status['d'] = 1;
+            break;
 
-      case 'a':
-      case 'A':
-        key_status['a'] = 1;
-        break;
-
-
-      case 'n':
-      case 'N':
-        night_mode = !night_mode;
-        break;
-
-       case 'e':
-         exit(0);
-
-      case 'm':
-      case 'M':
-        miniMap = !miniMap;
-        break;
-
-      case 't':
-      case 'T':
-        if(textureEnable)
-          glEnable(GL_TEXTURE_2D);
-        else glDisable(GL_TEXTURE_2D);
-
-        textureEnable = !textureEnable;
-        break;
+        case 'a':
+        case 'A':
+            key_status['a'] = 1;
+            break;
 
 
-      default:
-          break;
-  }
+        case 'n':
+        case 'N':
+            night_mode = !night_mode;
+            break;
+
+        case 'e':
+            exit(0);
+
+        case 'm':
+        case 'M':
+            miniMap = !miniMap;
+            break;
+
+        case 't':
+        case 'T':
+            if(textureEnable)
+                glEnable(GL_TEXTURE_2D);
+            else glDisable(GL_TEXTURE_2D);
+
+            textureEnable = !textureEnable;
+            break;
+
+
+        case '1':
+            camera.setType(CAMERA_01);
+            camera.setAngle(70);
+            configGame();
+            break;
+
+        case '2':
+            camera.setType(CAMERA_02);
+            camera.setAngle(70);
+            configGame();
+            break;
+
+        case '3':
+            camera.setType(CAMERA_03);
+            camera.setAngle(70);
+            configGame();
+            break;
+
+        default:
+            break;
+    }
 
     configObservator();
     glutPostRedisplay();
