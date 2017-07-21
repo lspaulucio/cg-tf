@@ -1,4 +1,4 @@
-#Dependences#
+# Dependences #
 - G++
 - OpenGL
 
@@ -10,7 +10,7 @@ git clone https://github.com/lspaulucio/cg-tf.git
 
 ***PS:  Make sure that you have installed all dependeces***
 
-#Compiling#
+# Compiling #
 
   - On linux terminal, go to project folder and execute the command
   
@@ -18,7 +18,7 @@ git clone https://github.com/lspaulucio/cg-tf.git
     ~$ make
     ```
 
-#Run#
+# Run #
 
   - On linux terminal, make sure you are in project folder
 
